@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SHIELD · Neural Mindspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root {
+ --bg-main: #05080f;
+ --bg-surface: rgba(14, 23, 42, 0.55);
+ --bg-surface-glow: rgba(22, 36, 68, 0.8);
+ --border-color: rgba(125, 214, 232, 0.14);
+ --border-hover: rgba(125, 214, 232, 0.45);
+ --accent: #7dd6e8;
+ --accent-glow: rgba(125, 214, 232, 0.3);
+ --text-main: #eef4f9;
+ --text-dim: #94a3b8;
+ --text-muted: #5b6b82;
+ --good: #45d49a;
+ /* navigation accents */
+ --c-map: #2bdcff;
+ --c-library: #b478ff;
+ --c-cards: #ffd23f;
+ --c-challenges: #ff5c8a;
+ --c-diary: #ff7ae0;
+ --c-services: #4fd1c5;
+ /* services page group accents */
+ --sc-analysis: #4fd1c5;
+ --sc-dash: #5ec8f5;
+ --sc-perf: #e8cf86;
+ --sc-tools: #b478ff;
+ --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+ --font-display: 'Orbitron', 'Plus Jakarta Sans', system-ui, sans-serif;
+ --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+ --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+ --r-lg: 20px; --r-md: 14px; --r-sm: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: var(--font-sans); background: var(--bg-main); color: var(--text-main); overflow: hidden; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+body { background:
+   radial-gradient(at 0% 0%, rgba(16, 30, 60, 0.55) 0px, transparent 48%),
+   radial-gradient(at 100% 100%, rgba(10, 16, 34, 0.9) 0px, transparent 50%),
+   var(--bg-main);
+}
+
+/* ambient living background */
+.ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.ambient::before, .ambient::after {
+ content: ''; position: absolute; width: 60vw; height: 60vw; border-radius: 50%; filter: blur(90px); opacity: 0.20;
+}
+.ambient::before { background: radial-gradient(circle, #1f6f8c, transparent 70%); top: -20vw; left: -10vw; animation: drift1 26s ease-in-out infinite; }
+.ambient::after { background: radial-gradient(circle, #5b3f8c, transparent 70%); bottom: -25vw; right: -12vw; animation: drift2 32s ease-in-out infinite; }
+@keyframes drift1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(8vw,6vh) scale(1.12); } }
+@keyframes drift2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-7vw,-5vh) scale(1.08); } }
+
+.topbar, .iconbar, .page { position: relative; z-index: 1; }
+
+.topbar {
+ height: 60px; background: rgba(7, 11, 22, 0.7); backdrop-filter: blur(14px);
+ border-bottom: 1px solid var(--border-color);
+ display: flex; align-items: center; padding: 0 24px; gap: 20px; z-index: 100;
+}
+.brand { display:flex; align-items:center; gap:12px; cursor:pointer; transition: var(--transition); }
+.brand:hover { filter: brightness(1.12); }
+.brand-icon-box {
+ position: relative; width: 38px; height: 38px; flex-shrink: 0;
+ display: flex; align-items: center; justify-content: center;
+ background: linear-gradient(135deg, rgba(15,24,44,0.9), rgba(9,14,28,0.85));
+ border: 1px solid var(--border-color);
+ clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+ box-shadow: 0 0 16px rgba(125,214,232,0.10), inset 0 0 12px rgba(125,214,232,0.05);
+}
+.brand-icon-box::before { content:''; position:absolute; left:0; top:0; width:3px; height:100%; background: linear-gradient(180deg, var(--accent), transparent 85%); opacity:0.75; }
+.brand-icon-box svg { width: 22px; height: 22px; color:var(--accent); filter: drop-shadow(0 0 9px var(--accent-glow)); }
+.brand-text-box {
+ position: relative; padding: 6px 16px 6px 12px;
+ background: linear-gradient(135deg, rgba(15,24,44,0.9), rgba(9,14,28,0.85));
+ border: 1px solid var(--border-color);
+ clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+ box-shadow: 0 0 16px rgba(125,214,232,0.10), inset 0 0 12px rgba(125,214,232,0.05);
+}
+.brand-text-box::before { content:''; position:absolute; left:0; top:0; width:3px; height:100%; background: linear-gradient(180deg, var(--accent), transparent 85%); opacity:0.75; }
+.brand-name { font-family: var(--font-display); font-size:18px; font-weight:800; letter-spacing:.16em; color:var(--accent); text-shadow:0 0 14px var(--accent-glow); line-height:1; }
+.brand-sub { font-size:8.5px; font-weight:600; letter-spacing:.03em; color:var(--accent); margin-top:4px; line-height:1.1; white-space:nowrap; }
+@media (max-width:760px){ .brand-sub{ display:none; } }
+
+.xp-group { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+
+/* rank/XP HUD card — angular cut corners + accent edge, echoing the brand
+   wordmark's display font so the level readout reads as one design language */
+.rank-card {
+ position: relative; display: flex; flex-direction: column; gap: 6px;
+ padding: 7px 18px 7px 14px; min-width: 220px;
+ background: linear-gradient(135deg, rgba(15,24,44,0.88), rgba(9,14,28,0.82));
+ border: 1px solid var(--border-color);
+ clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+ box-shadow: 0 0 18px rgba(125,214,232,0.07), inset 0 0 16px rgba(125,214,232,0.03);
+}
+.rank-card::before { content:''; position:absolute; left:0; top:0; width:3px; height:100%; background: linear-gradient(180deg, var(--accent), transparent 85%); opacity:0.75; }
+.rank-card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.xp-lbl { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--text-dim); white-space: nowrap; letter-spacing: 0.02em; }
+.xp-lbl b { font-family: var(--font-display); font-weight: 800; font-size: 12.5px; letter-spacing: 0.08em; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); text-transform: uppercase; }
+.xp-num { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.02em; white-space: nowrap; }
+.xp-track { position: relative; width: 100%; height: 7px; background: rgba(255,255,255,0.05); border-radius: 100px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); }
+.xp-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #3f7fc7, var(--accent)); border-radius: 100px; box-shadow: 0 0 10px var(--accent-glow); transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
+.xp-track::after { content:''; position:absolute; inset:0; pointer-events:none; background-image: repeating-linear-gradient(90deg, rgba(4,7,13,0.5) 0 1.5px, transparent 1.5px 11px); }
+
+.streak {
+ position: relative; display: flex; align-items: center; gap: 6px;
+ font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: #ffd76b; white-space: nowrap; letter-spacing: 0.03em;
+ background: linear-gradient(135deg, rgba(232,207,134,0.11), rgba(232,207,134,0.04));
+ border: 1px solid rgba(232,207,134,0.35);
+ clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+ padding: 8px 16px; box-shadow: 0 0 16px rgba(232,207,134,0.10), inset 0 0 12px rgba(232,207,134,0.04);
+}
+
+.iconbar {
+ height: 74px; margin: 12px 24px;
+ background: rgba(7, 11, 22, 0.7); backdrop-filter: blur(14px);
+ border: 1px solid var(--border-color);
+ clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+ box-shadow: 0 0 16px rgba(125,214,232,0.10), inset 0 0 12px rgba(125,214,232,0.05);
+ display: flex; align-items: center; justify-content: center; gap: 14px; padding: 0 24px; z-index: 90;
+ position: relative;
+}
+.iconbar::before { content:''; position:absolute; left:0; top:0; width:3px; height:100%; background: linear-gradient(180deg, var(--accent), transparent 85%); opacity:0.75; }
+.ib-btn {
+ display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px;
+ cursor: pointer; padding: 9px 18px 13px; border-radius: var(--r-md); color: var(--ib);
+ border: 1px solid color-mix(in srgb, var(--ib) 24%, rgba(255,255,255,0.08));
+ background: linear-gradient(180deg, rgba(24,36,60,0.85) 0%, rgba(9,14,27,0.8) 100%);
+ box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -10px 14px -10px rgba(0,0,0,0.5), 0 3px 8px rgba(0,0,0,0.35), 0 0 6px color-mix(in srgb, var(--ib) 12%, transparent);
+ transition: var(--transition); min-width: 86px; position: relative;
+}
+.ib-btn::after {
+ content: ''; position: absolute; left: 16px; right: 16px; bottom: 6px; height: 2px; border-radius: 100px;
+ background: var(--ib); opacity: 0.6; box-shadow: 0 0 5px color-mix(in srgb, var(--ib) 70%, transparent);
+}
+.ib-btn i, .ib-btn svg { width: 22px; height: 22px; opacity: 0.95; transition: var(--transition); filter: drop-shadow(0 0 4px color-mix(in srgb, var(--ib) 40%, transparent)); }
+.ib-btn span { font-size: 10px; font-weight: 700; letter-spacing: .07em; color: var(--text-muted); transition: var(--transition); }
+.ib-btn:hover { background: linear-gradient(180deg, color-mix(in srgb, var(--ib) 14%, #182338 86%) 0%, color-mix(in srgb, var(--ib) 10%, #0b1120 90%) 100%); border-color: color-mix(in srgb, var(--ib) 45%, transparent); transform: translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -10px 14px -10px rgba(0,0,0,0.5), 0 6px 14px rgba(0,0,0,0.4), 0 0 8px color-mix(in srgb, var(--ib) 22%, transparent); }
+.ib-btn:hover i, .ib-btn:hover svg { opacity: 1; filter: drop-shadow(0 0 7px color-mix(in srgb, var(--ib) 55%, transparent)); }
+.ib-btn:hover span { color: var(--ib); }
+.ib-btn.active { background: linear-gradient(180deg, color-mix(in srgb, var(--ib) 20%, #182338 80%) 0%, color-mix(in srgb, var(--ib) 12%, #0b1120 88%) 100%); border-color: color-mix(in srgb, var(--ib) 65%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -10px 14px -10px rgba(0,0,0,0.5), 0 0 12px color-mix(in srgb, var(--ib) 24%, transparent); }
+.ib-btn.active i, .ib-btn.active svg { opacity: 1; filter: drop-shadow(0 0 8px color-mix(in srgb, var(--ib) 60%, transparent)); }
+.ib-btn.active span { color: var(--ib); }
+.ib-btn.active::after { opacity: 0.9; height: 2.5px; }
+
+.page { display: none; height: calc(100vh - 158px); overflow: hidden; animation: fadeIn 0.4s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== MAP PAGE ===== */
+#page-map { position: relative; }
+.map-layout { display: flex; height: 100%; width: 100%; }
+
+.metrics-dock {
+ width: 328px; flex-shrink: 0; height: calc(100% - 24px); margin: 12px 0 12px 12px;
+ background: linear-gradient(180deg, rgba(10, 17, 34, 0.7), rgba(8, 13, 26, 0.55));
+ backdrop-filter: blur(16px);
+ border: 1px solid rgba(127, 230, 255, 0.32);
+ border-radius: var(--r-lg);
+ box-shadow: 0 0 22px rgba(127, 230, 255, 0.08), inset 0 0 20px rgba(127, 230, 255, 0.03);
+ padding: 18px 20px 20px; overflow: hidden; position: relative; z-index: 20;
+ display: flex; flex-direction: column;
+}
+/* same faint network-mesh texture as the iconbar, tuned taller/narrower for
+   the sidebar's aspect ratio — sits behind all dock content, never over it */
+.metrics-dock::before {
+ content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+ background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 900" preserveAspectRatio="none"><path id="dp0" d="M0,40 L320,420" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.16"/><path id="dp1" d="M30,900 L300,90" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.18"/><path id="dp2" d="M0,280 L320,680" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.14"/><path id="dp3" d="M300,0 L0,560" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.16"/><path id="dp4" d="M90,0 L320,820" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.14"/><path id="dp5" d="M0,760 L240,40" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.18"/><path id="dp6" d="M320,200 L60,900" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.12"/><path id="dp7" d="M0,120 L320,80" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.11"/><path id="dp8" d="M160,0 L0,300" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.12"/><path id="dp9" d="M320,450 L0,900" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.13"/><path id="dp10" d="M200,0 L320,300" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.14"/><path id="dp11" d="M0,500 L320,540" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.11"/><path id="dp12" d="M260,900 L0,650" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.15"/><path id="dp13" d="M320,650 L150,0" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.13"/><path id="dp14" d="M0,900 L320,760" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.12"/><path id="dp15" d="M140,150 L320,600" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.13"/><path id="dp16" d="M0,600 L180,900" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.14"/><path id="dp17" d="M320,120 L120,900" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.11"/><path id="dp18" d="M0,200 L320,240" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.1"/><path id="dp19" d="M320,340 L0,380" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.11"/><path id="dp20" d="M180,900 L220,0" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.1"/><path id="dp21" d="M0,880 L120,0" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.12"/><path id="dp22" d="M320,520 L60,860" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.1"/><path id="dp23" d="M40,0 L320,540" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.11"/><path id="dp24" d="M0,420 L160,900" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.1"/><path id="dp25" d="M320,780 L200,180" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.12"/><path id="dp26" d="M60,900 L320,640" fill="none" stroke="%237fe6ff" stroke-width="1" stroke-opacity="0.09"/><circle cx="24" cy="860" r="2" fill="%237fe6ff" fill-opacity="0.4"/><circle cx="300" cy="30" r="1.6" fill="%237fe6ff" fill-opacity="0.35"/><circle cx="280" cy="470" r="1.4" fill="%237fe6ff" fill-opacity="0.3"/><circle cx="40" cy="240" r="1.6" fill="%237fe6ff" fill-opacity="0.3"/><circle cx="200" cy="700" r="1.3" fill="%237fe6ff" fill-opacity="0.3"/><circle cx="70" cy="20" r="1.5" fill="%237fe6ff" fill-opacity="0.35"/><circle cx="150" cy="380" r="1.5" fill="%237fe6ff" fill-opacity="0.3"/><circle cx="300" cy="600" r="1.3" fill="%237fe6ff" fill-opacity="0.28"/><circle cx="20" cy="540" r="1.4" fill="%237fe6ff" fill-opacity="0.3"/><circle cx="260" cy="140" r="1.6" fill="%237fe6ff" fill-opacity="0.32"/><circle cx="100" cy="820" r="1.3" fill="%237fe6ff" fill-opacity="0.28"/><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="5.0s" begin="0.0s" repeatCount="indefinite"><mpath href="%23dp0"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="5.8s" begin="0.42s" repeatCount="indefinite"><mpath href="%23dp1"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="6.6s" begin="0.84s" repeatCount="indefinite"><mpath href="%23dp2"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="7.4s" begin="1.26s" repeatCount="indefinite"><mpath href="%23dp3"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="8.2s" begin="1.68s" repeatCount="indefinite"><mpath href="%23dp4"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="9.0s" begin="2.1s" repeatCount="indefinite"><mpath href="%23dp5"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="9.8s" begin="2.52s" repeatCount="indefinite"><mpath href="%23dp6"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="5.0s" begin="2.94s" repeatCount="indefinite"><mpath href="%23dp7"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="5.8s" begin="3.36s" repeatCount="indefinite"><mpath href="%23dp8"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="6.6s" begin="3.78s" repeatCount="indefinite"><mpath href="%23dp9"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="7.4s" begin="4.2s" repeatCount="indefinite"><mpath href="%23dp10"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="8.2s" begin="4.62s" repeatCount="indefinite"><mpath href="%23dp11"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="9.0s" begin="5.04s" repeatCount="indefinite"><mpath href="%23dp12"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="9.8s" begin="5.46s" repeatCount="indefinite"><mpath href="%23dp13"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="5.0s" begin="0.88s" repeatCount="indefinite"><mpath href="%23dp14"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="5.8s" begin="0.5s" repeatCount="indefinite"><mpath href="%23dp15"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="6.6s" begin="0.12s" repeatCount="indefinite"><mpath href="%23dp16"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="7.4s" begin="7.14s" repeatCount="indefinite"><mpath href="%23dp17"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="8.2s" begin="7.56s" repeatCount="indefinite"><mpath href="%23dp18"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="9.0s" begin="7.98s" repeatCount="indefinite"><mpath href="%23dp19"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="9.8s" begin="8.4s" repeatCount="indefinite"><mpath href="%23dp20"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="5.0s" begin="3.82s" repeatCount="indefinite"><mpath href="%23dp21"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="5.8s" begin="3.44s" repeatCount="indefinite"><mpath href="%23dp22"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="6.6s" begin="3.06s" repeatCount="indefinite"><mpath href="%23dp23"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="7.4s" begin="2.68s" repeatCount="indefinite"><mpath href="%23dp24"/></animateMotion></circle><circle r="1.2" fill="%23dffaff" fill-opacity="0.4"><animateMotion dur="8.2s" begin="2.3s" repeatCount="indefinite"><mpath href="%23dp25"/></animateMotion></circle><circle r="1.5" fill="%23dffaff" fill-opacity="0.55"><animateMotion dur="9.0s" begin="1.92s" repeatCount="indefinite"><mpath href="%23dp26"/></animateMotion></circle></svg>');
+ background-size: 145% 145%; background-repeat: no-repeat;
+ animation: meshDrift 34s ease-in-out infinite;
+}
+@keyframes meshDrift {
+ 0%, 100% { background-position: 0% 0%; }
+ 50% { background-position: 22% 18%; }
+}
+.md-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase; display:flex; align-items:center; gap:8px; flex-shrink:0; white-space:nowrap; }
+.md-eyebrow i { color: var(--accent); }
+
+/* mobile-only status card: mirrors the topbar's rank/XP/streak inside every
+   dock, since on narrow screens that info moves off the topbar (which only
+   has room for the S.H.I.E.L.D. wordmark) and into the dock-toggle drawer */
+.dock-status { display: none; flex-direction: column; gap: 8px; margin-bottom: 14px; padding: 10px 12px; background: rgba(6,10,20,0.5); border: 1px solid var(--border-color); border-radius: var(--r-md); flex-shrink: 0; }
+.dock-status-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.dock-status-rank { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+.dock-status-rank b { font-family: var(--font-display); font-weight: 800; color: var(--accent); text-shadow: 0 0 8px var(--accent-glow); letter-spacing: 0.05em; text-transform: uppercase; }
+.dock-status-xpnum { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+.dock-status-xp-track { height: 6px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); }
+.dock-status-xp-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #3f7fc7, var(--accent)); border-radius: 100px; box-shadow: 0 0 8px var(--accent-glow); transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
+.dock-status-streak { align-self: flex-start; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; color: #ffd76b; background: rgba(232,207,134,0.08); border: 1px solid rgba(232,207,134,0.3); border-radius: 100px; padding: 5px 12px; }
+.md-header-row { display:flex; align-items:center; gap:14px; margin-bottom:16px; flex-shrink:0; background: rgba(6,10,20,0.42); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); padding: 9px 12px; backdrop-filter: blur(6px); }
+.md-overall { display:flex; align-items:center; gap:9px; flex:1; min-width:0; }
+.md-overall-bar { flex:1; height:6px; background: rgba(255,255,255,0.07); border-radius:100px; overflow:hidden; border:1px solid rgba(255,255,255,0.03); }
+.md-overall-fill { display:block; height:100%; width:0%; background: linear-gradient(90deg, #3f7fc7, var(--accent)); border-radius:100px; box-shadow:0 0 9px var(--accent-glow); transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
+.md-overall-pct { font-family: var(--font-mono); font-size:12.5px; font-weight:700; color: var(--accent); flex-shrink:0; min-width:32px; text-align:right; }
+
+.md-activity-row { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-shrink:0; background: rgba(6,10,20,0.42); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); padding: 12px; backdrop-filter: blur(6px); }
+.donut-host-sm { width:112px; height:112px; flex-shrink:0; }
+.donut-host-sm svg { width:100%; height:100%; display:block; }
+.md-mastered { flex:1; min-width:0; }
+.md-mastered .big { font-family: var(--font-mono); font-size:19px; font-weight:600; color:var(--accent); line-height:1; }
+.md-mastered .sub { font-size:11px; color:var(--text-dim); margin-top:5px; font-weight:500; line-height:1.4; }
+
+.md-callouts { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 16px; flex-shrink:0; }
+.callout { background: rgba(9,14,27,0.62); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); padding: 11px 12px; min-height: 70px; backdrop-filter: blur(4px); }
+.callout .c-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; display:flex; align-items:center; gap:5px; }
+.callout .c-val { font-size: 12.5px; font-weight: 700; color: #fff; margin-top: 7px; line-height: 1.3; display:flex; align-items:center; gap:6px; }
+.callout .c-val .dotc { display:inline-block; width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.callout .c-meta { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+
+.md-section-title { font-size: 11px; font-weight: 700; color: #cbd5e1; letter-spacing: 0.04em; margin: 0 0 10px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.md-section-title .hint { font-size: 9px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.md-topics-list { display:flex; flex-direction:column; gap:1px; overflow-y:auto; overflow-x:hidden; flex:1 1 auto; }
+.dock-back-row { display:flex; align-items:center; gap:8px; padding:8px; margin-bottom:6px; border-radius:var(--r-sm); cursor:pointer; color:var(--accent); font-size:11px; font-weight:700; transition:var(--transition); }
+.dock-back-row:hover { background: rgba(255,255,255,0.06); }
+.subtopic-row { display:flex; align-items:flex-start; gap:9px; padding:8px; border-radius:var(--r-sm); cursor:pointer; transition:var(--transition); border-left:3px solid transparent; background: rgba(6,10,20,0.32); }
+.subtopic-row:hover { background: rgba(255,255,255,0.07); transform: translateX(2px); }
+.subtopic-row.active { background: color-mix(in srgb, var(--rc, var(--accent)) 16%, transparent); border-left-color: var(--rc, var(--accent)); }
+.subtopic-check { margin-top:1px; width:16px; height:16px; border-radius:50%; border:1px solid rgba(255,255,255,0.15); display:inline-flex; align-items:center; justify-content:center; font-size:9.5px; color:var(--text-muted); flex-shrink:0; }
+.subtopic-check.done { background: rgba(69,212,154,0.18); border-color: var(--good); color: var(--good); box-shadow:0 0 8px rgba(69,212,154,0.25); }
+.subtopic-name { flex:1; font-size:11.5px; font-weight:600; color:#cbd5e1; line-height:1.4; }
+.subtopic-row.active .subtopic-name { color:#fff; }
+.subtopic-count { font-family:var(--font-mono); font-size:9.5px; color:var(--text-dim); flex-shrink:0; margin-top:2px; white-space:nowrap; }
+.region-row { display: flex; align-items: center; gap: 9px; padding: 6px 8px; border-radius: var(--r-sm); cursor: pointer; transition: var(--transition); border-left: 3px solid transparent; background: rgba(6,10,20,0.32); }
+.region-row:hover { background: rgba(255,255,255,0.07); transform: translateX(2px); }
+.region-row.active { background: color-mix(in srgb, var(--rc, var(--accent)) 16%, transparent); border-left-color: var(--rc, var(--accent)); box-shadow: 0 0 16px color-mix(in srgb, var(--rc, var(--accent)) 22%, transparent); }
+.region-row.active .region-name { color: #fff; }
+.region-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.region-name { font-size: 11px; font-weight: 600; color: #cbd5e1; width: 80px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.region-bar { flex: 1; min-width: 30px; height: 5px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+.region-fill { display: block; height: 100%; border-radius: 100px; transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
+.region-val { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); width: 38px; text-align: right; flex-shrink: 0; }
+.donut-seg { cursor: pointer; transition: opacity 0.2s, stroke-width 0.2s; }
+.donut-seg:hover { opacity: 0.78; }
+
+.brain-area { flex: 1; position: relative; min-width: 0; }
+.map-wrap { width: 100%; height: 100%; position: relative; }
+/* ===== HOLOGRAM EMITTER (replaces the old corner-bracket HUD frame) =====
+   Small projector device drawn inside the map SVG, directly under the YOU
+   node — the design story: the brain map is a hologram beamed out of this
+   device. It lives in the same SVG coordinate space as the brain, so it
+   scales and moves with it automatically in every view. Built in buildMap(). */
+.holo-pulse { transform-box: fill-box; transform-origin: center; animation: holoPulse 4.8s ease-out infinite; }
+@keyframes holoPulse {
+ 0%   { transform: scale(1);    opacity: 0.45; }
+ 70%  { transform: scale(1.75); opacity: 0; }
+ 100% { transform: scale(1.75); opacity: 0; }
+}
+#mapSvg { width: 100%; height: 100%; display: block; }
+.dock-toggle { display: none; }
+
+.node-g { cursor: pointer; }
+.node-glow { transition: opacity 0.5s ease, r 0.5s ease; }
+.axon { transition: stroke-opacity 0.25s ease, stroke-width 0.25s ease; }
+.axon.lit { stroke-opacity: 0.65 !important; stroke-width: 2 !important; }
+.node-hit { fill: #fff; opacity: 0; transition: opacity 0.2s; }
+.node-g:hover .node-hit { opacity: 0.05; }
+.node-g:hover .node-label { fill: #fff !important; }
+
+@media (prefers-reduced-motion: reduce) {
+ .pulse, .breathe { animation: none !important; }
+ .ambient::before, .ambient::after { animation: none !important; }
+ .holo-pulse { animation: none !important; opacity: 0 !important; }
+}
+.breathe { animation: breathe 5.5s ease-in-out infinite; }
+@keyframes breathe { 0%,100% { opacity: 0.45; } 50% { opacity: 0.85; } }
+
+/* ===== READER / DETAIL PANEL (wider) ===== */
+.cpanel {
+ position: absolute; right: 18px; top: 18px; height: calc(100% - 36px);
+ width: clamp(480px, 85%, 1440px); max-width: calc(100% - 36px);
+ background: linear-gradient(180deg, rgba(12, 19, 38, 0.9), rgba(9, 14, 28, 0.86)); backdrop-filter: blur(22px);
+ border: 1px solid var(--border-color); border-radius: var(--r-lg);
+ border-left: 3px solid var(--panel-accent, var(--border-color));
+ display: flex; flex-direction: column;
+ transform: translateX(calc(100% + 40px)); transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), border-left-color 0.3s ease;
+ z-index: 50; box-shadow: 0 24px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.cpanel.open { transform: translateX(0); }
+.cp-head { padding: 20px 26px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 13px; }
+.cp-dot { width: 11px; height: 11px; border-radius: 50%; box-shadow: 0 0 12px currentColor; }
+.cp-title { font-size: 16px; font-weight: 700; color: #fff; flex: 1; letter-spacing: 0.01em; }
+.cp-close { background: rgba(255,255,255,0.05); border: none; border-radius: 50%; cursor: pointer; color: var(--text-dim); width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; transition: var(--transition); font-size: 14px; }
+.cp-close:hover { background: rgba(255,255,255,0.12); color: #fff; transform: rotate(90deg); }
+
+.cp-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0 14px; }
+.cp-tab { flex: 1; padding: 13px 4px; font-size: 11px; font-weight: 700; color: var(--text-muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: var(--transition); text-transform: uppercase; letter-spacing: 0.06em; }
+.cp-tab:hover { color: var(--text-main); }
+.cp-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.prog-wrap { padding: 16px 26px 0; }
+.prog-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--text-dim); margin-bottom: 7px; }
+.prog-row span:last-child { font-family: var(--font-mono); }
+.prog-bar { height: 5px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 100px; transition: width 0.5s ease; }
+.cp-body { flex: 1; overflow-y: auto; padding: 22px 26px; }
+
+.cc { background: var(--bg-surface); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: var(--r-md); padding: 18px 16px 16px; margin-bottom: 11px; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; }
+.cc::before { content:''; position:absolute; left:0; right:0; top:0; height:3px; background: var(--cc-accent, var(--accent)); box-shadow: 0 0 10px var(--cc-accent, var(--accent)); opacity:0.85; transition: var(--transition); }
+.cc:hover { border-color: var(--border-hover); background: var(--bg-surface-glow); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.25); }
+.cc:hover::before { opacity: 1; height:4px; }
+.cc-title { font-size: 13.5px; color: #fff; font-weight: 600; line-height: 1.5; }
+.cc-meta { font-size: 11px; color: var(--text-dim); margin-top: 7px; display: flex; align-items: center; gap: 6px; }
+.cc-subcat { font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 7px; opacity: 0.92; }
+.cc-done { float: right; width: 19px; height: 19px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); margin-left: 8px; transition: var(--transition); }
+.cc-done.done { background: rgba(69, 212, 154, 0.16); border-color: var(--good); color: var(--good); box-shadow: 0 0 10px rgba(69,212,154,0.25); }
+
+/* library filter bar: topic pills only now — subtopic filtering lives in the
+   sidebar dock's drill-down list, so the dropdown here was dropped */
+.lib-filterbar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+.lib-filterbar-row { display: flex; align-items: center; gap: 12px; }
+.lib-topic-filters { display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto; flex: 1; min-width: 0; padding-bottom: 2px; }
+.lib-topic-filters::-webkit-scrollbar { display: none; }
+.lib-tpill { flex-shrink: 0; }
+.lib-tpill { display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: var(--text-dim); font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: var(--transition); }
+.lib-tpill::before { content:''; width: 7px; height: 7px; border-radius: 50%; background: var(--tc, var(--accent)); box-shadow: 0 0 6px var(--tc, var(--accent)); flex-shrink: 0; }
+.lib-tpill:hover { border-color: var(--tc, var(--border-hover)); color: #fff; }
+.lib-tpill.active { border-color: var(--tc, var(--accent)); background: color-mix(in srgb, var(--tc, var(--accent)) 16%, transparent); color: #fff; box-shadow: 0 0 14px color-mix(in srgb, var(--tc, var(--accent)) 32%, transparent); }
+
+/* ===== SERVICES PAGE (Phase 5) ===== */
+.svc-wrap { padding: 36px; max-width: 1180px; margin: 0 auto; height: 100%; overflow-y: auto; }
+.svc-hero { margin-bottom: 38px; }
+.svc-hero-art { width: 100%; max-width: 560px; height: auto; display: block; margin-bottom: 18px; }
+.svc-hero h1 { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: 0.01em; margin-bottom: 10px; }
+.svc-hero p { font-size: 13.5px; color: var(--text-dim); max-width: 640px; line-height: 1.6; }
+.svc-groups { display: flex; flex-direction: column; gap: 38px; }
+.svc-group-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.svc-group-icon { font-size: 19px; line-height: 1; }
+.svc-group-title { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; }
+.svc-group-head::after { content: ''; flex: 1; height: 2px; background: var(--sc-accent, var(--accent)); opacity: 0.5; border-radius: 100px; margin-left: 4px; }
+.svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.svc-card { background: var(--bg-surface); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); padding: 18px 16px 16px; position: relative; overflow: hidden; transition: var(--transition); }
+.svc-card::before { content:''; position: absolute; left:0; right:0; top:0; height:3px; background: var(--sc-accent, var(--accent)); box-shadow: 0 0 10px var(--sc-accent, var(--accent)); opacity: 0.85; }
+.svc-card:hover { transform: translateY(-2px); border-color: var(--border-hover); background: var(--bg-surface-glow); box-shadow: 0 10px 24px rgba(0,0,0,0.25); }
+.svc-emoji { font-size: 24px; display: block; margin-bottom: 10px; }
+.svc-name { font-size: 13.5px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.svc-desc { font-size: 11.5px; color: var(--text-dim); line-height: 1.55; }
+
+.sub-pills { padding: 4px 0 16px; display: flex; flex-wrap: wrap; gap: 7px; }
+.lib-subcat-select { align-self: flex-start; background: #0e1526; border: 1px solid var(--border-color); border-radius: var(--r-sm); color: #fff; font-family: inherit; font-size: 12.5px; font-weight: 600; padding: 9px 14px; cursor: pointer; transition: var(--transition); min-width: 220px; }
+.lib-subcat-select:hover, .lib-subcat-select:focus { border-color: var(--border-hover); }
+.lib-subcat-select option { background: #0e1526; color: #fff; }
+
+.lib-wrap { padding: 18px 32px 22px; max-width: 1280px; margin: 0 auto; }
+.lib-topic-block { margin-bottom: 32px; }
+.lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 15px; }
+
+/* item-map: map-page-style node network used inside Library/Flashcards/Challenges topic blocks */
+.item-map {
+ width: 100%; margin: 0 0 14px; padding: 16px 14px 10px; position: relative; overflow: hidden;
+ border: 1px solid rgba(127, 230, 255, 0.16); border-radius: var(--r-lg);
+ background: radial-gradient(ellipse at 42% 30%, rgba(36,64,98,0.34), rgba(14,28,50,0.22));
+ box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+/* list mode swaps the pannable network for a plain scrollable card grid —
+   nothing to clip or transform here, so let it size normally */
+.item-map.list-mode { overflow: visible; }
+/* topic title now lives inside the map box itself, as a small floating badge,
+   instead of a separate header row above it */
+.im-badge { position: absolute; top: 14px; left: 16px; z-index: 3; display: flex; align-items: center; gap: 9px; padding: 6px 13px 6px 6px; background: rgba(8,13,26,0.74); border: 1px solid color-mix(in srgb, var(--tc, var(--accent)) 45%, transparent); border-radius: 100px; backdrop-filter: blur(8px); box-shadow: 0 0 14px color-mix(in srgb, var(--tc, var(--accent)) 20%, transparent); }
+/* same chip, but in normal flow above the list instead of floating over the svg */
+.lib-list-header { display: inline-flex; align-items: center; gap: 9px; padding: 6px 13px 6px 6px; background: rgba(8,13,26,0.74); border: 1px solid color-mix(in srgb, var(--tc, var(--accent)) 45%, transparent); border-radius: 100px; margin-bottom: 16px; box-shadow: 0 0 14px color-mix(in srgb, var(--tc, var(--accent)) 20%, transparent); }
+.im-badge-icon { width: 24px; height: 24px; border-radius: 50%; background: color-mix(in srgb, var(--tc, var(--accent)) 18%, transparent); border: 1px solid var(--tc, var(--accent)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.im-badge-icon svg { width: 15px; height: 15px; display: block; }
+.im-badge-name { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: 0.01em; white-space: nowrap; }
+.im-badge-count { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); white-space: nowrap; }
+/* pan/zoom controls — small buttons, always available, most useful on phones
+   where the node network is otherwise too dense to read comfortably */
+.im-zoom-controls { position: absolute; top: 14px; right: 14px; z-index: 4; display: flex; flex-direction: column; gap: 5px; }
+.im-zoom-btn { width: 27px; height: 27px; border-radius: 8px; background: rgba(8,13,26,0.76); border: 1px solid rgba(127,230,255,0.28); color: var(--accent); font-size: 15px; font-weight: 700; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(6px); transition: var(--transition); padding: 0; }
+.im-zoom-btn:hover { background: rgba(125,214,232,0.18); border-color: var(--accent); }
+.item-map-svg { width: 100%; height: auto; display: block; overflow: visible; transform-origin: center center; transition: transform 0.08s ease-out; touch-action: pan-y; }
+.im-axon { transition: stroke-opacity 0.25s ease, stroke-width 0.25s ease; }
+.im-axon.lit { stroke-opacity: 0.75 !important; stroke-width: 1.8 !important; }
+.im-node { cursor: pointer; }
+.im-node circle, .im-node text { transition: var(--transition); }
+.im-node:hover circle:nth-of-type(2) { filter: drop-shadow(0 0 12px var(--tc, var(--accent))); }
+.im-node:hover text { fill: #fff !important; }
+.im-center { pointer-events: none; }
+/* map/list view toggle, sits at the end of the topic-pill row */
+.lib-view-toggle { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 100px; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 26%, rgba(9,14,27,0.9)); color: #fff; font-size: 12.5px; font-weight: 800; letter-spacing: 0.02em; font-family: inherit; cursor: pointer; transition: var(--transition); flex-shrink: 0; white-space: nowrap; box-shadow: 0 0 16px rgba(125,214,232,0.3), inset 0 0 10px rgba(125,214,232,0.08); }
+.lib-view-toggle:hover { background: color-mix(in srgb, var(--accent) 38%, rgba(9,14,27,0.9)); box-shadow: 0 0 22px rgba(125,214,232,0.45), inset 0 0 10px rgba(125,214,232,0.12); transform: translateY(-1px); }
+.linked-block { margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; gap: 11px; }
+.linked-head { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.linked-btn { display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; background: var(--bg-surface); border: 1px solid rgba(255,255,255,0.07); border-left: 3px solid var(--lk, var(--accent)); border-radius: var(--r-md); padding: 14px 16px; cursor: pointer; color: var(--text-main); font-family: inherit; transition: var(--transition); }
+.linked-btn:hover { border-color: var(--lk, var(--accent)); background: var(--bg-surface-glow); transform: translateX(3px); }
+.linked-btn > i:first-child { width: 20px; height: 20px; color: var(--lk, var(--accent)); flex-shrink: 0; }
+.linked-btn .lk-txt { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.linked-btn .lk-t { font-size: 13px; font-weight: 700; color: #fff; }
+.linked-btn .lk-s { font-size: 11px; color: var(--text-dim); }
+.lk-arrow { width: 16px; height: 16px; color: var(--text-dim); flex-shrink: 0; }
+
+.diary-layout { display: grid; grid-template-columns: 420px 1fr; height: 100%; background: rgba(0,0,0,0.1); }
+.diary-composer { padding: 34px; border-right: 1px solid var(--border-color); background: rgba(8, 12, 24, 0.4); backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 16px; }
+.diary-composer h2 { font-size: 19px; font-weight: 700; color: var(--c-diary); display: flex; align-items: center; gap: 9px; }
+.diary-textarea { width: 100%; background: rgba(0,0,0,0.25); border: 1px solid rgba(224, 140, 200, 0.22); border-radius: var(--r-md); padding: 16px; font-size: 13px; color: #f1f5f9; font-family: inherit; line-height: 1.6; resize: none; outline: none; transition: var(--transition); }
+.diary-textarea:focus { border-color: rgba(224, 140, 200, 0.6); box-shadow: 0 0 16px rgba(224, 140, 200, 0.15); }
+.diary-foot { display: flex; flex-direction: column; gap: 14px; }
+.mood-group { display: flex; flex-wrap: wrap; gap: 7px; }
+.mood-btn { padding: 6px 13px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); font-size: 12px; color: var(--text-dim); cursor: pointer; transition: var(--transition); font-weight: 500; }
+.mood-btn:hover, .mood-btn.sel { background: rgba(224, 140, 200, 0.12); border-color: rgba(224, 140, 200, 0.5); color: var(--c-diary); }
+.diary-actions { display: flex; gap: 10px; width: 100%; }
+.diary-save { flex: 1; padding: 11px; border-radius: var(--r-sm); background: rgba(224, 140, 200, 0.2); color: #fff; border: 1px solid rgba(224, 140, 200, 0.45); font-size: 12px; font-weight: 700; cursor: pointer; transition: var(--transition); }
+.diary-save:hover { background: rgba(224, 140, 200, 0.32); transform: translateY(-1px); }
+.diary-ai-btn { padding: 11px 14px; border-radius: var(--r-sm); background: rgba(125, 214, 232, 0.1); color: var(--accent); border: 1px solid var(--border-color); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+.diary-ai-btn:hover { background: rgba(125, 214, 232, 0.2); border-color: var(--accent); }
+
+.diary-entries { padding: 34px; overflow-y: auto; }
+.diary-entry { background: var(--bg-surface); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r-md); padding: 20px; margin-bottom: 12px; transition: var(--transition); }
+.diary-entry:hover { border-color: rgba(255,255,255,0.1); background: var(--bg-surface-glow); }
+.de-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.de-date { font-size: 11px; color: var(--text-dim); font-weight: 600; }
+.de-text { font-size: 13px; color: #cbd5e1; line-height: 1.6; white-space: pre-wrap; }
+.de-mood { font-size: 11px; padding: 3px 11px; border-radius: 100px; background: rgba(224,140,200,0.09); color: var(--c-diary); border: 1px solid rgba(224,140,200,0.22); font-weight: 600; }
+
+.ai-insight-box { margin-top: 12px; padding: 12px; background: rgba(125, 214, 232, 0.04); border: 1px dashed rgba(125, 214, 232, 0.3); border-radius: var(--r-sm); font-size: 11px; color: var(--accent); line-height: 1.5; display: flex; gap: 8px; align-items: flex-start; animation: fadeIn 0.3s ease; }
+
+.fc-card { background: var(--bg-surface); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--r-md); padding: 22px; cursor: pointer; margin-bottom: 11px; min-height: 92px; display: flex; flex-direction: column; justify-content: center; transition: var(--transition); }
+.fc-card:hover { border-color: var(--accent); transform: scale(1.01); box-shadow: 0 0 16px rgba(125,214,232,0.12); }
+.fc-front { font-size: 13.5px; color: var(--accent); font-weight: 600; }
+.fc-back { font-size: 12.5px; color: #cbd5e1; line-height: 1.6; margin-top: 12px; display: none; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 12px; }
+.fc-card.flipped .fc-back { display: block; }
+.fc-hint { font-size: 10px; color: var(--text-muted); margin-top: 8px; text-align: right; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.article-reader { background: rgba(0,0,0,0.2); border-radius: var(--r-md); padding: 26px; border: 1px solid rgba(255,255,255,0.05); }
+.article-reader h1 { font-size: 21px; color: #fff; font-weight: 700; margin-bottom: 16px; }
+.article-reader h2 { font-size: 16px; color: var(--accent); font-weight: 700; margin: 18px 0 10px; }
+.article-reader h3 { font-size: 14px; color: #cbd5e1; font-weight: 700; margin: 14px 0 8px; }
+.article-reader p { font-size: 13.5px; color: #a8b5c4; line-height: 1.78; margin-bottom: 13px; }
+.article-reader ul { margin: 0 0 13px 18px; } .article-reader li { font-size: 13.5px; color: #a8b5c4; line-height: 1.7; margin-bottom: 5px; }
+.article-reader strong { color: #e7eef5; } .article-reader em { color: var(--accent); font-style: normal; }
+.article-reader blockquote { border-left: 3px solid var(--accent); margin: 0 0 14px; padding: 9px 16px; background: rgba(125,214,232,0.06); color: #9fb3c8; font-style: italic; border-radius: 0 8px 8px 0; font-size: 13.5px; line-height: 1.7; }
+.article-reader ol { margin: 0 0 13px 20px; } .article-reader ol li { font-size: 13.5px; color: #a8b5c4; line-height: 1.7; margin-bottom: 6px; }
+.article-reader hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 20px 0; }
+.article-reader img { max-width: 100%; border-radius: 10px; margin: 10px 0; display: block; }
+.article-reader code { background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 5px; font-family: var(--font-mono); font-size: 12.5px; color: var(--accent); }
+.ch-scenario blockquote { border-left: 3px solid var(--c-challenges); margin: 0 0 10px; padding: 7px 14px; background: rgba(255,92,138,0.06); color: #cdd8e6; font-style: italic; border-radius: 0 8px 8px 0; }
+.ch-scenario ol, .ch-scenario ul { margin: 0 0 10px 20px; } .ch-scenario li { font-size: 14px; color: #cdd8e6; line-height: 1.6; margin-bottom: 4px; }
+.back-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--text-main); border-radius: var(--r-sm); padding: 7px 15px; font-size: 11px; font-weight: 600; cursor: pointer; margin-bottom: 18px; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
+.back-btn:hover { background: rgba(255,255,255,0.1); color: var(--accent); }
+
+/* ===== Challenge / Quest ===== */
+.ch-scenario-label, .ch-prompt { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-challenges); font-weight: 600; margin-bottom: 10px; }
+.ch-prompt { margin: 22px 0 12px; color: var(--text-dim); }
+.ch-scenario { background: rgba(255,92,138,0.05); border: 1px solid rgba(255,92,138,0.16); border-radius: var(--r-md); padding: 18px 20px; }
+.ch-scenario p { font-size: 14px; color: #cdd8e6; line-height: 1.75; margin-bottom: 10px; }
+.ch-scenario p:last-child { margin-bottom: 0; }
+.ch-scenario strong { color: #fff; } .ch-scenario em { color: var(--c-challenges); font-style: normal; }
+.ch-scenario h2,.ch-scenario h3 { color:#fff; font-size:15px; margin:12px 0 8px; }
+.ch-options { display: flex; flex-direction: column; gap: 10px; }
+.ch-opt { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; width: 100%; text-align: left; background: var(--bg-surface); border: 1px solid rgba(255,255,255,0.07); border-radius: var(--r-md); padding: 15px 16px; cursor: pointer; transition: var(--transition); color: var(--text-main); font-family: inherit; }
+.ch-opt:not(.locked):hover { border-color: var(--c-challenges); transform: translateY(-1px); }
+.ch-opt.locked { cursor: default; }
+.ch-opt-letter { flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 600; font-size: 13px; color: var(--text-dim); }
+.ch-opt-text { flex: 1; font-size: 13.5px; line-height: 1.5; padding-top: 3px; }
+.ch-opt-fb { flex-basis: 100%; font-size: 12.5px; line-height: 1.6; color: var(--text-dim); margin-top: 4px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); display: none; }
+.ch-opt.revealed .ch-opt-fb { display: block; }
+.ch-opt.correct { border-color: rgba(69,212,154,0.55); background: rgba(69,212,154,0.07); }
+.ch-opt.correct .ch-opt-letter { background: rgba(69,212,154,0.2); color: var(--good); }
+.ch-opt.wrong { border-color: rgba(255,92,138,0.5); background: rgba(255,92,138,0.06); }
+.ch-opt.wrong .ch-opt-letter { background: rgba(255,92,138,0.2); color: var(--c-challenges); }
+.ch-opt.chosen { box-shadow: 0 0 0 1px rgba(255,255,255,0.14); }
+.ch-result { margin-top: 18px; padding: 14px 16px; border-radius: var(--r-md); font-size: 13px; font-weight: 600; line-height: 1.6; display: none; }
+.ch-result.show { display: block; }
+.ch-result.win { background: rgba(69,212,154,0.1); border: 1px solid rgba(69,212,154,0.3); color: var(--good); }
+.ch-result.miss { background: rgba(255,92,138,0.08); border: 1px solid rgba(255,92,138,0.3); color: #ff86a8; }
+
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.09); border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+.loading, .empty { text-align: center; padding: 44px; font-size: 13px; color: var(--text-dim); font-weight: 500; }
+
+@media (max-width: 920px) {
+ .metrics-dock { position: absolute; left: 0; top: 0; margin: 0; height: 100%; border-radius: 0; transform: translateX(-100%); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 0 44px rgba(0,0,0,0.6); z-index: 40; }
+ .metrics-dock.open { transform: translateX(0); }
+ .dock-toggle { display: inline-flex; position: absolute; left: 14px; top: 14px; z-index: 60; align-items:center; gap:7px; background: rgba(10,17,34,0.88); border: 1px solid var(--border-color); color: var(--accent); border-radius: 100px; padding: 9px 15px; font-size: 11px; font-weight: 700; cursor: pointer; backdrop-filter: blur(10px); }
+ .cpanel { width: calc(100% - 28px); right: 14px; }
+ .diary-layout { grid-template-columns: 1fr; overflow-y: auto; }
+ .diary-composer { border-right: none; border-bottom: 1px solid var(--border-color); }
+ /* rank/XP/streak move off the topbar (no room next to the wordmark) and
+    into the dock-status card inside every dock's slide-out drawer instead */
+ .xp-group { display: none; }
+ .dock-status { display: flex; }
+ /* icon bar: keep every nav button reachable via horizontal swipe instead of
+    squeezing six buttons into one narrow row */
+ .iconbar { justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 8px 12px; padding: 0 14px; }
+ .iconbar::-webkit-scrollbar { display: none; }
+ .ib-btn { min-width: 74px; padding: 8px 13px 11px; flex-shrink: 0; }
+ .ib-btn span { font-size: 9px; }
+}
+@media (max-width: 560px) {
+ .brand-text-box { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+
+<div class="topbar">
+<div class="brand" onclick="showPage('map')">
+<div class="brand-icon-box"><svg viewBox="140 100 590 425" xmlns="http://www.w3.org/2000/svg"><path d="M150,290 C145,230 165,176 216,150 C300,112 410,108 500,116 C580,134 626,156 656,196 C690,232 706,256 700,300 C696,344 712,372 714,402 C716,440 690,460 656,464 C620,468 596,462 580,452 C566,446 560,456 558,472 C556,494 540,512 516,514 C498,515 482,510 472,496 C458,470 450,440 446,418 C440,410 416,412 380,414 C336,418 300,422 288,414 C244,404 210,388 202,356 C198,330 160,332 150,290 Z" fill="none" stroke="currentColor" stroke-width="20" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+<div class="brand-text brand-text-box">
+<div class="brand-name">S.H.I.E.L.D.</div>
+<div class="brand-sub">Supporting Human Intelligence and Emotional Learning and Development</div>
+</div>
+</div>
+<div class="xp-group">
+<div class="rank-card">
+<div class="rank-card-top">
+<span class="xp-lbl" id="rank-lbl"><b>—</b></span>
+<span class="xp-num" id="xp-num">0 / 0 XP</span>
+</div>
+<div class="xp-track"><div class="xp-fill" id="xp-fill"></div></div>
+</div>
+<div class="streak" id="streak-pill">⚡ 0-day streak</div>
+</div>
+</div>
+
+<div class="iconbar">
+<button class="ib-btn active" id="ib-map" style="--ib:var(--c-map)" onclick="showPage('map')"><i data-lucide="brain"></i><span>MAP</span></button>
+<button class="ib-btn" id="ib-library" style="--ib:var(--c-library)" onclick="showPage('library')"><i data-lucide="book-open"></i><span>LIBRARY</span></button>
+<button class="ib-btn" id="ib-flashcards" style="--ib:var(--c-cards)" onclick="showPage('flashcards')"><i data-lucide="layers"></i><span>CARDS</span></button>
+<button class="ib-btn" id="ib-challenges" style="--ib:var(--c-challenges)" onclick="showPage('challenges')"><i data-lucide="zap"></i><span>CHALLENGES</span></button>
+<button class="ib-btn" id="ib-diary" style="--ib:var(--c-diary)" onclick="showPage('diary')"><i data-lucide="pen-tool"></i><span>DIARY</span></button>
+<button class="ib-btn" id="ib-services" style="--ib:var(--c-services)" onclick="showPage('services')"><i data-lucide="briefcase"></i><span>SERVICES</span></button>
+</div>
+
+<!-- MAP -->
+<div class="page active" id="page-map">
+<div class="map-layout">
+
+ <aside class="metrics-dock" id="metrics-dock">
+   <div class="dock-status">
+     <div class="dock-status-top">
+       <span class="dock-status-rank"><b>—</b></span>
+       <span class="dock-status-xpnum">0 / 0 XP</span>
+     </div>
+     <div class="dock-status-xp-track"><div class="dock-status-xp-fill"></div></div>
+     <div class="dock-status-streak">⚡ 0-day streak</div>
+   </div>
+   <div class="md-header-row">
+     <div class="md-eyebrow"><i data-lucide="activity" style="width:13px"></i> Mind Status</div>
+     <div class="md-overall">
+       <div class="md-overall-bar"><div class="md-overall-fill" id="hero-bar-fill"></div></div>
+       <span class="md-overall-pct" id="hero-pct">0%</span>
+     </div>
+   </div>
+
+   <div class="md-activity-row">
+     <div class="donut-host-sm"><svg id="donut" viewBox="0 0 176 176"></svg></div>
+     <div class="md-mastered">
+       <div class="big" id="hero-modules">0 / 0</div>
+       <div class="sub" id="hero-sub">Thoughts on modules</div>
+     </div>
+   </div>
+
+   <div class="md-section-title">Topics <span class="hint">tap to open</span></div>
+   <div id="region-list" class="md-topics-list"></div>
+
+   <div class="md-callouts">
+     <div class="callout">
+       <div class="c-lbl"><i data-lucide="flame" style="width:11px"></i> Strongest</div>
+       <div class="c-val" id="co-strong">—</div>
+       <div class="c-meta" id="co-strong-meta">—</div>
+     </div>
+     <div class="callout">
+       <div class="c-lbl"><i data-lucide="crosshair" style="width:11px"></i> Focus next</div>
+       <div class="c-val" id="co-focus">—</div>
+       <div class="c-meta" id="co-focus-meta">—</div>
+     </div>
+   </div>
+ </aside>
+
+ <div class="brain-area">
+   <button class="dock-toggle" onclick="toggleDock('metrics-dock')"><i data-lucide="bar-chart-2" style="width:13px"></i> Status</button>
+   <div class="map-wrap">
+     <svg id="mapSvg" viewBox="135 95 580 450" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+       <defs>
+         <filter id="softGlow" x="-90%" y="-90%" width="280%" height="280%">
+           <feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/></feMerge>
+         </filter>
+         <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+           <feGaussianBlur stdDeviation="2.4" result="blur"/>
+           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+         </filter>
+         <filter id="axonGlow" x="-60%" y="-60%" width="220%" height="220%">
+           <feGaussianBlur stdDeviation="1.4" result="blur"/>
+           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+         </filter>
+         <radialGradient id="coreGrad" cx="50%" cy="42%" r="60%">
+           <stop offset="0%" stop-color="#114054"/><stop offset="100%" stop-color="#08111f"/>
+         </radialGradient>
+         <radialGradient id="brainFill" cx="42%" cy="38%" r="75%">
+           <stop offset="0%" stop-color="rgba(36,64,98,0.42)"/><stop offset="100%" stop-color="rgba(14,28,50,0.30)"/>
+         </radialGradient>
+         <clipPath id="brainClip"><path id="brainClipShape" d=""/></clipPath>
+       </defs>
+       <g id="brain"></g>
+       <g id="lines"></g>
+       <g id="pulses"></g>
+       <g id="nodes"></g>
+     </svg>
+     <div class="cpanel" id="cpanel">
+       <div class="cp-head">
+         <div class="cp-dot" id="cp-dot"></div>
+         <span class="cp-title" id="cp-title">—</span>
+         <button class="cp-close" onclick="closePanel()">✕</button>
+       </div>
+       <div class="prog-wrap" id="prog-wrap" style="display:none">
+         <div class="prog-row"><span id="prog-label">Progress</span><span id="prog-pct">0%</span></div>
+         <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+       </div>
+       <div class="cp-tabs" id="cp-tabs"></div>
+       <div class="cp-body" id="cp-body"></div>
+     </div>
+   </div>
+ </div>
+
+</div>
+</div>
+
+<!-- LIBRARY -->
+<div class="page" id="page-library">
+<div class="map-layout">
+<aside class="metrics-dock" id="dock-library"></aside>
+<div class="brain-area">
+<button class="dock-toggle" onclick="toggleDock('dock-library')"><i data-lucide="bar-chart-2" style="width:13px"></i> Status</button>
+<div class="lib-wrap" id="lib-wrap"><div class="loading">Loading Mindspace…</div></div>
+</div>
+</div>
+</div>
+
+<!-- FLASHCARDS -->
+<div class="page" id="page-flashcards">
+<div class="map-layout">
+<aside class="metrics-dock" id="dock-flashcards"></aside>
+<div class="brain-area">
+<button class="dock-toggle" onclick="toggleDock('dock-flashcards')"><i data-lucide="bar-chart-2" style="width:13px"></i> Status</button>
+<div class="lib-wrap" id="fc-wrap"><div class="loading">Loading Deck…</div></div>
+</div>
+</div>
+</div>
+
+<!-- CHALLENGES -->
+<div class="page" id="page-challenges">
+<div class="map-layout">
+<aside class="metrics-dock" id="dock-challenges"></aside>
+<div class="brain-area">
+<button class="dock-toggle" onclick="toggleDock('dock-challenges')"><i data-lucide="bar-chart-2" style="width:13px"></i> Status</button>
+<div class="lib-wrap" id="ch-wrap"><div class="loading">Loading Operations…</div></div>
+</div>
+</div>
+</div>
+
+<!-- DIARY -->
+<div class="page" id="page-diary">
+<div class="diary-layout">
+<div class="diary-composer">
+<h2><i data-lucide="feather" style="width:18px;"></i> Diary</h2>
+<textarea class="diary-textarea" id="diary-input" placeholder="What mental patterns did you notice today?..." rows="6"></textarea>
+<div class="diary-foot">
+<span style="font-size:11px; font-weight:600; color:var(--text-dim)">Current State:</span>
+<div class="mood-group">
+<button class="mood-btn" onclick="selectMood(this,'😊 Good')">😊 Good</button>
+<button class="mood-btn" onclick="selectMood(this,'😐 Neutral')">😐 Neutral</button>
+<button class="mood-btn" onclick="selectMood(this,'😔 Hard')">😔 Hard</button>
+<button class="mood-btn" onclick="selectMood(this,'🔥 Energized')">🔥 Energized</button>
+<button class="mood-btn" onclick="selectMood(this,'😴 Tired')">😴 Tired</button>
+</div>
+<div class="diary-actions">
+<button class="diary-save" onclick="saveDiaryEntry()">Secure Entry</button>
+<button class="diary-ai-btn" onclick="triggerAiInsight()" title="AI Psychological Analysis"><i data-lucide="sparkles" style="width:16px;"></i></button>
+</div>
+</div>
+</div>
+<div class="diary-entries" id="diary-entries"><div class="loading">Syncing Chronology…</div></div>
+</div>
+</div>
+
+<!-- SERVICES -->
+<div class="page" id="page-services"><div class="svc-wrap">
+
+ <div class="svc-hero">
+   <svg class="svc-hero-art" viewBox="0 0 600 90" preserveAspectRatio="xMidYMid meet">
+     <line x1="40" y1="45" x2="150" y2="20" stroke="#4fd1c5" stroke-width="1" stroke-opacity="0.35"/>
+     <line x1="150" y1="20" x2="270" y2="55" stroke="#5ec8f5" stroke-width="1" stroke-opacity="0.35"/>
+     <line x1="270" y1="55" x2="390" y2="18" stroke="#e8cf86" stroke-width="1" stroke-opacity="0.35"/>
+     <line x1="390" y1="18" x2="520" y2="48" stroke="#b478ff" stroke-width="1" stroke-opacity="0.35"/>
+     <line x1="150" y1="20" x2="390" y2="18" stroke="#7dd6e8" stroke-width="1" stroke-opacity="0.2"/>
+     <line x1="270" y1="55" x2="520" y2="48" stroke="#7dd6e8" stroke-width="1" stroke-opacity="0.2"/>
+     <circle cx="40" cy="45" r="4" fill="#4fd1c5"/>
+     <circle cx="150" cy="20" r="4" fill="#5ec8f5"/>
+     <circle cx="270" cy="55" r="4" fill="#e8cf86"/>
+     <circle cx="390" cy="18" r="4" fill="#b478ff"/>
+     <circle cx="520" cy="48" r="4" fill="#4fd1c5"/>
+   </svg>
+   <h1>Beyond the app: SHIELD services</h1>
+   <p>SHIELD started as a personal growth companion — but the same psychology-driven approach also powers real organizational work. Here's what else SHIELD (and the person behind it) can help your team with. 🧠✨</p>
+ </div>
+
+ <div class="svc-groups">
+
+   <div class="svc-group">
+     <div class="svc-group-head" style="--sc-accent:var(--sc-analysis)">
+       <span class="svc-group-icon">🔍</span><span class="svc-group-title">Organizational analyses</span>
+     </div>
+     <div class="svc-grid">
+       <div class="svc-card" style="--sc-accent:var(--sc-analysis)"><span class="svc-emoji">🧩</span><div class="svc-name">Big Five</div><div class="svc-desc">Personality-trait assessment for individuals and teams.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-analysis)"><span class="svc-emoji">🔥</span><div class="svc-name">Engagement</div><div class="svc-desc">Survey-based measurement of workforce engagement drivers.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-analysis)"><span class="svc-emoji">🕸️</span><div class="svc-name">Sociometry</div><div class="svc-desc">Mapping informal relationships and influence within a team.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-analysis)"><span class="svc-emoji">📄</span><div class="svc-name">Document analysis</div><div class="svc-desc">Structured review of policies, processes, and HR documentation.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-analysis)"><span class="svc-emoji">🏛️</span><div class="svc-name">Hierarchy analysis</div><div class="svc-desc">Mapping reporting lines, spans of control, and org structure.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-analysis)"><span class="svc-emoji">💬</span><div class="svc-name">Communication analysis</div><div class="svc-desc">Diagnosing how information actually flows across a team.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-analysis)"><span class="svc-emoji">🎯</span><div class="svc-name">SWOT &amp; 360</div><div class="svc-desc">Strategic self-assessment and multi-rater feedback reviews.</div></div>
+     </div>
+   </div>
+
+   <div class="svc-group">
+     <div class="svc-group-head" style="--sc-accent:var(--sc-dash)">
+       <span class="svc-group-icon">📊</span><span class="svc-group-title">Dashboards &amp; reporting</span>
+     </div>
+     <div class="svc-grid">
+       <div class="svc-card" style="--sc-accent:var(--sc-dash)"><span class="svc-emoji">📈</span><div class="svc-name">People dashboarding</div><div class="svc-desc">Dashboarding and reporting on People metrics across several industries.</div></div>
+     </div>
+   </div>
+
+   <div class="svc-group">
+     <div class="svc-group-head" style="--sc-accent:var(--sc-perf)">
+       <span class="svc-group-icon">🚀</span><span class="svc-group-title">Performance development</span>
+     </div>
+     <div class="svc-grid">
+       <div class="svc-card" style="--sc-accent:var(--sc-perf)"><span class="svc-emoji">🕯️</span><div class="svc-name">Burnout</div><div class="svc-desc">Early detection and prevention support for burnout risk.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-perf)"><span class="svc-emoji">🎯</span><div class="svc-name">Personal goals (SMART)</div><div class="svc-desc">Structured goal-setting using the SMART framework.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-perf)"><span class="svc-emoji">🗂️</span><div class="svc-name">Competency repository</div><div class="svc-desc">A structured library of role competencies and behavioral anchors.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-perf)"><span class="svc-emoji">🌟</span><div class="svc-name">Positive leadership</div><div class="svc-desc">Strengths-based leadership development approach.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-perf)"><span class="svc-emoji">🎡</span><div class="svc-name">Life wheel &amp; life map</div><div class="svc-desc">Self-knowledge tools for reflecting on life balance and direction.</div></div>
+     </div>
+   </div>
+
+   <div class="svc-group">
+     <div class="svc-group-head" style="--sc-accent:var(--sc-tools)">
+       <span class="svc-group-icon">🧰</span><span class="svc-group-title">Further tools &amp; areas</span>
+     </div>
+     <div class="svc-grid">
+       <div class="svc-card" style="--sc-accent:var(--sc-tools)"><span class="svc-emoji">📋</span><div class="svc-name">General HR tasks</div><div class="svc-desc">Day-to-day HR-basic support and process execution.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-tools)"><span class="svc-emoji">🏢</span><div class="svc-name">Environmental preferences</div><div class="svc-desc">Understanding how physical/work environment affects people.</div></div>
+       <div class="svc-card" style="--sc-accent:var(--sc-tools)"><span class="svc-emoji">🌍</span><div class="svc-name">World game</div><div class="svc-desc">Interactive team exercise for exploring group dynamics.</div></div>
+     </div>
+   </div>
+
+ </div>
+</div></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+ apiKey:"AIzaSyCmZ4jAtTQ7w5pVh0iCr_OZ7PA-qvJZkXU",
+ authDomain:"shield-app84.firebaseapp.com",
+ projectId:"shield-app84",
+ storageBucket:"shield-app84.firebasestorage.app",
+ messagingSenderId:"910445934986",
+ appId:"1:910445934986:web:5cc89e342730a3bdcb3073"
+});
+const db = firebase.firestore();
+
+// Unified core-ability palette (Phase 1 design system). Each topic's color now
+// lives in exactly one place — everything else (map nodes, library accents,
+// donut charts, panels) reads from this array via COLORS[id], so a future
+// palette change only ever needs to happen here.
+const TOPICS = [
+ {id:'bio', label:'Biology',     core:'Neuron system',           color:'#2f9e63'}, // dark green
+ {id:'cog', label:'Cognitive',   core:'Schemes',                 color:'#ff2d6b'}, // neon pink-red
+ {id:'emo', label:'Emotions',    core:'Emotional intelligence',  color:'#ff3b3b'}, // neon red
+ {id:'perf',label:'Performance', core:'Engagement',              color:'#5ec8f5'}, // light blue
+ {id:'pers',label:'Personality', core:'Attitude',                color:'#6a1fe0'}, // deep neon violet
+ {id:'res', label:'Resilience',  core:'Coping',                  color:'#ff9d4d'}, // orange
+ {id:'soc', label:'Social World',core:'Awareness',               color:'#1fdf8f'}, // neon emerald green (swapped with Work)
+ {id:'sport',label:'Sport',      core:'Flow',                    color:'#1f2aa8'}, // deep neon indigo-blue
+ {id:'work',label:'Work',        core:'Satisfaction',            color:'#f7d046'}, // yellow (swapped with Social World)
+];
+// Publish each topic's color as a CSS custom property (--topic-<id>) so
+// stylesheet rules (e.g. the Library card top-border in Phase 2) can read the
+// same single source of truth instead of duplicating hex values in CSS.
+function publishTopicColorTokens(){
+ const root=document.documentElement.style;
+ TOPICS.forEach(t=>root.setProperty(`--topic-${t.id}`, t.color));
+}
+publishTopicColorTokens();
+let SUBCATS = {
+ perf:['Focus','Flow','Energy management','Group dynamics','Overcoming procrastination','Goal setting','Sports psychology'],
+ work:['Decision making','Leadership thinking','Conflict management','Negotiation psychology','Team dynamics','Social web at work','Burnout','Stress management'],
+ soc:['Human motivation','Recognizing manipulation','Persuasion','First impressions','Status dynamics','Field theory'],
+ pers:['Personality types','Measurement interpretation','External & internal dependencies','Attitude','Self-awareness','Values','Identity','Behavioral patterns','Spiritual','Mentality as a whole','Shield mindset'],
+ emo:['Emotion regulation','Empathy','Stress management','Emotional awareness','Emotions in others','Emotion recognition','Emotions vs performance'],
+ cog:['Memory techniques','Accelerated learning','Spaced repetition','Concentration','Biology background'],
+ res:['Resilience','Handling failure','Mental toughness','Stress adaptation','Rationalization','Schema therapy','Positive mindset basics'],
+ bio:['Brain regions overview','Brain region functions','Perception'],
+ sport:['Foundations of sport psychology','Goal setting for athletes','Motivation & drive','Confidence & self-efficacy','Concentration & attentional focus','Flow & peak performance','Arousal, anxiety & activation','Competition nerves & emotional control','Mental toughness & resilience','Self-talk & cognitive strategies','Imagery & visualization','Pre-performance routines & rituals','Pressure, choking & clutch performance','Coping with setbacks & mistakes','Injury, rehabilitation & return to sport','Recovery, sleep & burnout prevention','Team cohesion & communication','Leadership & the coach–athlete relationship','Discipline, habits & deliberate practice','Athlete identity, transitions & wellbeing']
+};
+
+async function loadCustomSubcats() {
+ try {
+   const snap = await db.collection('config').doc('subcats').get();
+   if(snap.exists) {
+     const data = snap.data();
+     Object.keys(data).forEach(k => {
+       if(SUBCATS[k]) { data[k].forEach(s => { if(!SUBCATS[k].includes(s)) SUBCATS[k].push(s); }); }
+       else { SUBCATS[k] = data[k]; }
+     });
+   }
+ } catch(e) { console.warn('loadCustomSubcats:', e.message); }
+}
+
+const COLORS = Object.fromEntries(TOPICS.map(t=>[t.id,t.color]));
+const LABELS = Object.fromEntries(TOPICS.map(t=>[t.id,t.label]));
+const CORE = Object.fromEntries(TOPICS.map(t=>[t.id,t.core]));
+const TOPIC_IDS = TOPICS.map(t=>t.id);
+const NS='http://www.w3.org/2000/svg', CY='#5ad6f0', R=25;
+// The YOU topic isn't in TOPICS (it earns no XP and sits outside the 8-topic
+// pool), but it needs the same color/label/core-ability lookups everything
+// else uses so it can reuse openTopicPanel/loadPanel unmodified.
+COLORS.you=CY; LABELS.you='You'; CORE.you='Integration';
+
+/* Side-view brain (facing left). Brainstem = YOU. Topics spread evenly across the form. */
+const POS = {
+ cog:[222,236], perf:[415,178], work:[560,190], bio:[640,262],
+ pers:[282,335], emo:[540,330], res:[655,395], soc:[338,242],
+ sport:[424,318],
+ you:[512,470]
+};
+const BRAIN_CENTER=[430,290];
+// network = every topic connected to every other topic, plus each topic to YOU
+const EDGES=[];
+for(let i=0;i<TOPIC_IDS.length;i++) for(let j=i+1;j<TOPIC_IDS.length;j++) EDGES.push([TOPIC_IDS[i],TOPIC_IDS[j]]);
+const CORE_EDGES = TOPIC_IDS.map(id=>['you',id]);
+const ALL_EDGES = [...EDGES.map(e=>[e[0],e[1],'t']), ...CORE_EDGES.map(e=>[e[0],e[1],'c'])];
+
+lucide.createIcons();
+
+// ===== data + stats =====
+let RAW = { items: [], diary: [] };
+let STATS = { overall:{total:0,done:0}, byTopic:{} };
+
+async function fsAll(col){ const snap=await db.collection(col).get(); return snap.docs.map(d=>({id:d.id,...d.data()})); }
+function getSeen(){ try{ return JSON.parse(localStorage.getItem('sh_seen')||'{}'); } catch{ return {}; } }
+function markSeen(id){
+ const s=getSeen();
+ if(!s[id]){ s[id]=new Date().toISOString(); localStorage.setItem('sh_seen',JSON.stringify(s)); }
+ recomputeStats(); refreshDashboard();
+ ['lib-wrap','fc-wrap','ch-wrap'].forEach(refreshContentDock);
+}
+
+async function loadStats(){
+ try{
+   const [arts, fcs, chs] = await Promise.all([fsAll('articles'), fsAll('flashcards'), fsAll('challenges')]);
+   RAW.items = [
+     ...arts.map(i=>({...i,_col:'articles'})),
+     ...fcs.map(i=>({...i,_col:'flashcards'})),
+     ...chs.map(i=>({...i,_col:'challenges'})),
+   ];
+ }catch(e){ console.warn('loadStats items:', e.message); RAW.items=[]; }
+ try{ RAW.diary = await fsAll('diary'); }catch(e){ RAW.diary=[]; }
+ recomputeStats();
+}
+
+function statsForCol(col){
+ const seen=getSeen();
+ const byTopic={};
+ TOPIC_IDS.forEach(id=>{ byTopic[id]={total:0,done:0,subcats:{}}; (SUBCATS[id]||[]).forEach(s=>byTopic[id].subcats[s]={total:0,done:0}); });
+ let total=0,done=0;
+ const pool = col ? (RAW.items||[]).filter(i=>i._col===col) : (RAW.items||[]);
+ pool.forEach(it=>{
+   const t=byTopic[it.topic]; if(!t) return;
+   const isDone=!!seen[it.id];
+   t.total++; total++; if(isDone){ t.done++; done++; }
+   if(it.subcat && t.subcats[it.subcat]){ t.subcats[it.subcat].total++; if(isDone) t.subcats[it.subcat].done++; }
+ });
+ return { overall:{total,done}, byTopic };
+}
+function recomputeStats(){ STATS = statsForCol(null); }
+function pct(d,t){ return t? Math.round(d/t*100):0; }
+
+// ===== activity / streak =====
+function activityDates(){
+ const seen=getSeen(); const set=new Set();
+ Object.values(seen).forEach(v=>{ if(typeof v==='string') set.add(v.slice(0,10)); });
+ RAW.diary.forEach(d=>{ const k=(d.date||d.created||'').slice(0,10); if(k) set.add(k); });
+ return set;
+}
+function dayKey(d){ return d.toISOString().slice(0,10); }
+function computeStreak(){
+ const set=activityDates(); if(!set.size) return 0;
+ const today=new Date(); const tk=dayKey(today);
+ const y=new Date(today); y.setDate(y.getDate()-1);
+ let cur=new Date(today);
+ if(!set.has(tk)){ if(set.has(dayKey(y))) cur=y; else return 0; }
+ let streak=0;
+ while(set.has(dayKey(cur))){ streak++; cur.setDate(cur.getDate()-1); }
+ return streak;
+}
+function masteredPerDay(){
+ const seen=getSeen(); const counts={};
+ Object.values(seen).forEach(v=>{ if(typeof v==='string'){ const k=v.slice(0,10); counts[k]=(counts[k]||0)+1; } });
+ const out=[];
+ for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=dayKey(d); out.push({label:['S','M','T','W','T','F','S'][d.getDay()], n:counts[k]||0}); }
+ return out;
+}
+
+// ===== xp / rank (Phase 4) =====
+// Reward values as specified: article=1000, flashcard(deck)=500, quest=1500.
+// Completion is tracked per Firestore doc id (via getSeen()), matching the
+// existing markSeen() granularity — so "flashcard: 500XP/card" is read as
+// "500XP per flashcard module", consistent with how completion is already
+// recorded for every other content type in this app.
+const XP_VALUES={articles:1000, flashcards:500, challenges:1500};
+const RANKS=['Spark','Circuit','Synapse','Vector','Cortex','Nexus','Oracle','Architect','Luminant','Singularity'];
+function rankForLevel(lvl){
+ const idx=Math.min(RANKS.length-1, Math.floor((lvl-1)/(100/RANKS.length)));
+ return RANKS[idx];
+}
+// XP is earned only from the 8 core topics — collecting 100% of their combined
+// max XP = Level 96. The YOU topic (unlocked at 84% of that same max) earns no
+// XP of its own; finishing it grants a fixed bonus climb from 96 to 100.
+function computeXpModel(){
+ const seen=getSeen(); let coreMax=0, coreEarned=0, youTotal=0, youDone=0;
+ (RAW.items||[]).forEach(it=>{
+   const val=XP_VALUES[it._col]||0;
+   if(it.topic==='you'){ youTotal++; if(seen[it.id]) youDone++; }
+   else { coreMax+=val; if(seen[it.id]) coreEarned+=val; }
+ });
+ const coreFrac=coreMax? coreEarned/coreMax : 0;
+ const coreLevel=1+Math.min(95, Math.floor(coreFrac*96));
+ const youUnlocked=coreMax>0 && coreFrac>=0.84;
+ const youFrac=youTotal? youDone/youTotal : 0;
+ const coreMaxed=coreMax>0 && coreEarned>=coreMax;
+ const level=coreMaxed && youTotal>0 ? 96+Math.min(4,Math.round(youFrac*4)) : coreLevel;
+ return {coreMax,coreEarned,coreFrac,coreLevel,coreMaxed,youUnlocked,youTotal,youDone,youFrac,level};
+}
+function youUnlockedNow(){ return computeXpModel().youUnlocked; }
+function updateTopbar(){
+ const m=computeXpModel();
+ const maxed=m.level>=100;
+ document.getElementById('rank-lbl').innerHTML=`<b>${rankForLevel(m.level)}</b> · Lv ${m.level}${maxed?' · MAX':''}`;
+ let withinPct=0, xpLbl='0 / 0 XP';
+ if(!m.coreMaxed || m.youTotal===0){
+   const bandXp=m.coreMax/96;
+   const inBand=bandXp? m.coreEarned-(m.level-1)*bandXp : 0;
+   withinPct=bandXp? Math.max(0,Math.min(100, inBand/bandXp*100)) : 0;
+   xpLbl=`${Math.round(m.coreEarned)} / ${Math.round(m.coreMax)} XP`;
+ } else if(!maxed){
+   withinPct=Math.max(0,Math.min(100, (m.youFrac*4-(m.level-96))*100));
+   xpLbl=`${m.youDone} / ${m.youTotal} YOU`;
+ } else {
+   withinPct=100; xpLbl=`${m.youDone} / ${m.youTotal} YOU · MAX`;
+ }
+ document.getElementById('xp-num').textContent=xpLbl;
+ document.getElementById('xp-fill').style.width=withinPct+'%';
+ document.getElementById('streak-pill').textContent=`⚡ ${computeStreak()}-day streak`;
+ // mobile: the same status also lives inside every dock (map + content pages),
+ // since the topbar's rank/XP/streak are hidden on narrow screens in favor of
+ // the dock-toggle button — see .dock-status in CSS
+ const rankHtml=`<b>${rankForLevel(m.level)}</b> · Lv ${m.level}${maxed?' · MAX':''}`;
+ const streakTxt=`⚡ ${computeStreak()}-day streak`;
+ document.querySelectorAll('.dock-status-rank').forEach(el=>el.innerHTML=rankHtml);
+ document.querySelectorAll('.dock-status-xpnum').forEach(el=>el.textContent=xpLbl);
+ document.querySelectorAll('.dock-status-xp-fill').forEach(el=>el.style.width=withinPct+'%');
+ document.querySelectorAll('.dock-status-streak').forEach(el=>el.textContent=streakTxt);
+}
+
+// ===== metrics dock =====
+function buildMetrics(){
+ const o=STATS.overall, p=pct(o.done,o.total);
+ const bar=document.getElementById('hero-bar-fill'); if(bar) bar.style.width=p+'%';
+ document.getElementById('hero-pct').textContent=p+'%';
+ document.getElementById('hero-modules').textContent=`${o.done} / ${o.total}`;
+ const topicsWith=TOPIC_IDS.filter(id=>(STATS.byTopic[id]||{}).total>0).length;
+ document.getElementById('hero-sub').textContent='Thoughts on modules';
+
+ const withContent=TOPIC_IDS.map(id=>{const t=STATS.byTopic[id]||{total:0,done:0,subcats:{}};return {id,t,p:pct(t.done,t.total)};}).filter(x=>x.t.total>0);
+ const setCallout=(elId,metaId,x)=>{
+   const e=document.getElementById(elId), m=document.getElementById(metaId);
+   if(!x){ e.innerHTML='<span style="color:var(--text-muted);font-weight:600">—</span>'; m.textContent='no data'; return; }
+   e.innerHTML=`<span class="dotc" style="background:${COLORS[x.id]};box-shadow:0 0 8px ${COLORS[x.id]}"></span><span>${LABELS[x.id]}</span>`;
+   m.textContent=`${x.p}% · ${x.t.done}/${x.t.total}`;
+ };
+ if(withContent.length){
+   const strong=withContent.slice().sort((a,b)=>b.p-a.p||b.t.done-a.t.done)[0];
+   const pool=withContent.filter(x=>x.p<100);
+   const focus=(pool.length?pool:withContent).slice().sort((a,b)=>a.p-b.p||b.t.total-a.t.total)[0];
+   setCallout('co-strong','co-strong-meta',strong); setCallout('co-focus','co-focus-meta',focus);
+ } else { setCallout('co-strong','co-strong-meta',null); setCallout('co-focus','co-focus-meta',null); }
+
+ document.getElementById('region-list').innerHTML=TOPICS.map(t=>{
+   const s=STATS.byTopic[t.id]||{total:0,done:0}; const pp=pct(s.done,s.total); const dim=s.total===0;
+   return `<div class="region-row${activeTopic===t.id?' active':''}" onclick="openTopicPanel('${t.id}')" style="--rc:${t.color};${dim?'opacity:.42':''}">
+     <span class="region-dot" style="background:${t.color};box-shadow:0 0 8px ${t.color}"></span>
+     <span class="region-name">${t.label}</span>
+     <span class="region-bar"><span class="region-fill" style="width:${pp}%;background:${t.color}"></span></span>
+     <span class="region-val">${dim?'—':pp+'%'}</span>
+   </div>`;
+ }).join('');
+
+ buildDonut();
+ lucide.createIcons();
+}
+
+function arcPath(cx,cy,r,a0,a1){
+ const p=(deg)=>{const a=(deg-90)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+ const [sx,sy]=p(a0),[ex,ey]=p(a1); const large=(a1-a0)>180?1:0;
+ return `M${sx.toFixed(2)} ${sy.toFixed(2)} A${r} ${r} 0 ${large} 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
+}
+function buildDonut(){
+ const svg=document.getElementById('donut'); if(!svg) return;
+ const cx=88,cy=88,r=66,sw=13,gap=5,seg=360/TOPICS.length;
+ let out='';
+ TOPICS.forEach((t,i)=>{
+   const s=STATS.byTopic[t.id]||{total:0,done:0}; const p=pct(s.done,s.total);
+   const a0=i*seg+gap/2, a1=(i+1)*seg-gap/2, dim=s.total===0;
+   out+=`<path d="${arcPath(cx,cy,r,a0,a1)}" fill="none" stroke="${t.color}" stroke-opacity="${dim?0.1:0.16}" stroke-width="${sw}" stroke-linecap="round"/>`;
+   if(s.total>0 && p>0){
+     const aF=a0 + (a1-a0)*p/100, isActive=activeTopic===t.id;
+     out+=`<path class="donut-seg${isActive?' active':''}" onclick="openTopicPanel('${t.id}')" d="${arcPath(cx,cy,r,a0,Math.max(a0+0.4,aF))}" fill="none" stroke="${t.color}" stroke-width="${isActive?sw+4:sw}" stroke-linecap="round" style="filter:drop-shadow(0 0 ${isActive?11:4}px ${t.color})"><title>${t.label}: ${p}% (${s.done}/${s.total})</title></path>`;
+   }
+ });
+ svg.innerHTML=out;
+}
+function refreshDashboard(){ buildMetrics(); updateTopbar(); refreshMapGlow(); }
+
+// ===== brain map =====
+function el(tag,attrs){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+function curvePath(a,b,bow){
+ const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2, dx=b[0]-a[0], dy=b[1]-a[1], len=Math.hypot(dx,dy)||1;
+ return `M${a[0]},${a[1]} Q${mx-dy/len*bow},${my+dx/len*bow} ${b[0]},${b[1]}`;
+}
+function curveToward(a,b,c,amt){
+ const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2; let dx=c[0]-mx, dy=c[1]-my; const L=Math.hypot(dx,dy)||1;
+ return `M${a[0]},${a[1]} Q${(mx+dx/L*amt).toFixed(1)},${(my+dy/L*amt).toFixed(1)} ${b[0]},${b[1]}`;
+}
+function polar(cx,cy,r,a){ return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
+function sampleCubic(p0,p1,p2,p3,n){ const o=[]; for(let i=0;i<n;i++){ const s=i/(n-1),a=1-s;
+ o.push([a*a*a*p0[0]+3*a*a*s*p1[0]+3*a*s*s*p2[0]+s*s*s*p3[0], a*a*a*p0[1]+3*a*a*s*p1[1]+3*a*s*s*p2[1]+s*s*s*p3[1]]); } return o; }
+function lighten(hex,amt){ const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+ const L=v=>Math.round(v+(255-v)*amt); return `rgb(${L(r)},${L(g)},${L(b)})`; }
+
+function buildBrain(){
+ const g=document.getElementById('brain');
+ g.setAttribute('filter','url(#neonGlow)');
+ // ONE continuous contour: cerebrum -> occipital -> cerebellum bulge -> notch -> brainstem stalk -> temporal -> front
+ const outline='M150,290 C145,230 165,176 216,150 C300,112 410,108 500,116 C580,134 626,156 656,196 C690,232 706,256 700,300 C696,344 712,372 714,402 C716,440 690,460 656,464 C620,468 596,462 580,452 C566,446 560,456 558,472 C556,494 540,512 516,514 C498,515 482,510 472,496 C458,470 450,440 446,418 C440,410 416,412 380,414 C336,418 300,422 288,414 C244,404 210,388 202,356 C198,330 160,332 150,290 Z';
+ const cs=document.getElementById('brainClipShape'); if(cs) cs.setAttribute('d', outline);
+ g.appendChild(el('path',{d:outline, fill:'url(#brainFill)', stroke:'#7fe6ff', 'stroke-width':'1.8', 'stroke-opacity':'0.9'}));
+
+ // Phase 3 finishing pass: the outline itself is unchanged (approved) — these are
+ // purely additive, clipped to that same silhouette, to read as grooved cortex
+ // rather than a flat outline. Two inner echoes of the exact contour (inset
+ // toward the center) plus a few short fold accents in open areas.
+ [[0.055,0.20],[0.12,0.12]].forEach(([frac,op])=>{
+   g.appendChild(el('path',{d:insetPathTowardCenter(outline,BRAIN_CENTER,frac), fill:'none', stroke:'#7fe6ff', 'stroke-width':'1', 'stroke-opacity':String(op), 'clip-path':'url(#brainClip)'}));
+ });
+ const grooves=[
+   'M258,192 Q322,164 384,186',
+   'M478,148 Q548,128 608,153',
+   'M300,362 Q345,384 392,374',
+   'M566,300 Q604,326 588,362',
+ ];
+ grooves.forEach(d=>{
+   g.appendChild(el('path',{d, fill:'none', stroke:'#7fe6ff', 'stroke-width':'1', 'stroke-opacity':'0.15', 'stroke-linecap':'round', 'clip-path':'url(#brainClip)'}));
+ });
+}
+function insetPathTowardCenter(pathStr, center, frac){
+ return pathStr.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (m,xs,ys)=>{
+   const x=parseFloat(xs), y=parseFloat(ys);
+   const nx=x+(center[0]-x)*frac, ny=y+(center[1]-y)*frac;
+   return `${nx.toFixed(1)},${ny.toFixed(1)}`;
+ });
+}
+
+function buildMap(){
+ buildBrain();
+ const lG=document.getElementById('lines'), nG=document.getElementById('nodes'), pG=document.getElementById('pulses');
+ lG.setAttribute('clip-path','url(#brainClip)');
+ lG.setAttribute('filter','url(#axonGlow)');
+ pG.setAttribute('clip-path','url(#brainClip)');
+
+ ALL_EDGES.forEach(([a,b,kind],i)=>{
+   lG.appendChild(el('path',{id:'edge-'+i, class:'axon', d:curveToward(POS[a],POS[b],BRAIN_CENTER, kind==='c'?56:16), fill:'none', stroke:CY,
+     'stroke-width': kind==='c'?'1.3':'0.7', 'stroke-opacity': kind==='c'?'0.26':'0.1', 'data-a':a, 'data-b':b}));
+ });
+
+ TOPIC_IDS.forEach(id=>{
+   const [cx,cy]=POS[id], col=COLORS[id];
+   const g=el('g',{class:'node-g', id:'node-'+id}); g.style.cursor='pointer';
+   g.addEventListener('click',()=>openTopicPanel(id));
+   g.addEventListener('mouseenter',()=>highlightEdges(id,true));
+   g.addEventListener('mouseleave',()=>highlightEdges(id,false));
+
+   // subcat satellite neurons as a tidy halo (bottom gap reserved for the label)
+   const subs=SUBCATS[id]||[];
+   const n=subs.length, rSat=R+13, gap=48*Math.PI/180, start=Math.PI/2+gap, end=Math.PI/2-gap+2*Math.PI;
+   const satG=el('g',{id:'sat-'+id});
+   subs.forEach((s,i)=>{
+     const a = n>1 ? (start + (end-start)*(i/(n-1))) : -Math.PI/2;
+     const [sx,sy]=polar(cx,cy,rSat,a), [ex,ey]=polar(cx,cy,R+2,a);
+     satG.appendChild(el('line',{x1:ex,y1:ey,x2:sx,y2:sy, stroke:col, 'stroke-width':'0.7', 'stroke-opacity':'0.16'}));
+     satG.appendChild(el('circle',{id:`sat-${id}-${i}`, cx:sx, cy:sy, r:'2.4', fill:'#0a1020', stroke:col, 'stroke-width':'1.1', 'stroke-opacity':'0.35'}));
+   });
+   g.appendChild(satG);
+
+   g.appendChild(el('circle',{id:'glow-'+id, class:'node-glow breathe', cx, cy, r:R+3, fill:col, opacity:'0', filter:'url(#softGlow)'}));
+   const circ=2*Math.PI*(R+6);
+   g.appendChild(el('circle',{cx, cy, r:R+6, fill:'none', stroke:'rgba(255,255,255,0.07)', 'stroke-width':'2.5'}));
+   g.appendChild(el('circle',{id:'ring-'+id, cx, cy, r:R+6, fill:'none', stroke:col, 'stroke-width':'2.6', 'stroke-linecap':'round',
+     'stroke-dasharray':`0 ${circ}`, transform:`rotate(-90 ${cx} ${cy})`, style:'transition:stroke-dasharray 0.7s cubic-bezier(0.16,1,0.3,1)'}));
+   g.appendChild(el('circle',{id:'c-'+id, cx, cy, r:R, fill:'#070c18', stroke:col, 'stroke-width':'2.2'}));
+   // inner dark disc → guarantees icon contrast even as body tint rises
+   g.appendChild(el('circle',{cx, cy, r:R-7, fill:'#060c17', opacity:'0.92'}));
+   // bright, enlarged icon
+   const tmp=el('g',{}); tmp.innerHTML=iconSvg(id,cx,cy,lighten(col,0.55));
+   const ig=el('g',{transform:`translate(${cx},${cy}) scale(1.2) translate(${-cx},${-cy})`});
+   while(tmp.firstChild) ig.appendChild(tmp.firstChild);
+   g.appendChild(ig);
+   // label + pct
+   const lbl=el('text',{class:'node-label', x:cx, y:cy+R+15, 'text-anchor':'middle', 'font-size':'12', 'font-weight':'700', fill:col, 'font-family':'var(--font-sans)', opacity:'0.95'}); lbl.textContent=LABELS[id]; g.appendChild(lbl);
+   const pv=el('text',{id:'pv-'+id, x:cx, y:cy+R+27, 'text-anchor':'middle', 'font-size':'9.5', 'font-weight':'600', fill:col, 'font-family':'var(--font-mono)'}); g.appendChild(pv);
+   g.appendChild(el('circle',{class:'node-hit', cx, cy, r:R}));
+   nG.appendChild(g);
+ });
+
+ // core YOU (on brainstem) — locked until 84% of core-topic XP is collected
+ const [yx,yy]=POS.you;
+ const yg=el('g',{id:'node-you', class:'node-g'}); yg.style.cursor='pointer';
+ yg.addEventListener('click',()=>{ if(youUnlockedNow()) openTopicPanel('you'); });
+ yg.appendChild(el('circle',{cx:yx, cy:yy, r:'48', fill:'none', stroke:CY, 'stroke-width':'1', opacity:'0.12'}));
+ yg.appendChild(el('circle',{class:'breathe', cx:yx, cy:yy, r:'38', fill:CY, opacity:'0.06', filter:'url(#softGlow)'}));
+ yg.appendChild(el('circle',{id:'you-ring', cx:yx, cy:yy, r:'34', fill:'none', stroke:CY, 'stroke-width':'2.2', 'stroke-linecap':'round',
+   'stroke-dasharray':'0 999', transform:`rotate(-90 ${yx} ${yy})`, style:'transition:stroke-dasharray 0.7s cubic-bezier(0.16,1,0.3,1)'}));
+ yg.appendChild(el('circle',{cx:yx, cy:yy, r:'31', fill:'url(#coreGrad)', stroke:CY, 'stroke-width':'2.6'}));
+ [['YOU',5,'15','800','0.14em']].forEach(([txt,dy,fs,fw,ls])=>{
+   const t=el('text',{x:yx, y:yy+parseInt(dy), 'text-anchor':'middle', 'font-size':fs, 'font-weight':fw, fill:CY, 'font-family':'var(--font-sans)', 'letter-spacing':ls});
+   t.textContent=txt; yg.appendChild(t);
+ });
+ // lock / progress sit inside the YOU disc, directly under the label
+ const youLock=el('text',{id:'you-lock', x:yx, y:yy+22, 'text-anchor':'middle', 'font-size':'11'}); youLock.textContent='🔒'; yg.appendChild(youLock);
+ const youPct=el('text',{id:'you-pct', x:yx, y:yy+22, 'text-anchor':'middle', 'font-size':'9.5', 'font-weight':'600', fill:'#6b7d93', 'font-family':'var(--font-mono)', opacity:'0'}); yg.appendChild(youPct);
+ nG.appendChild(yg);
+
+ // hologram emitter device under the YOU node (where the lock used to sit):
+ // the projector the brain "hologram" beams out of. Drawn in map coordinates
+ // so it scales and moves with the brain in every view. Purely decorative.
+ const ex=yx, ey=yy+64;
+ const hg=el('g',{id:'holo-emitter', 'pointer-events':'none'});
+ hg.appendChild(el('ellipse',{cx:ex, cy:ey, rx:'30', ry:'9', fill:CY, opacity:'0.10', filter:'url(#softGlow)'}));
+ hg.appendChild(el('ellipse',{cx:ex, cy:ey, rx:'32', ry:'9.5', fill:'none', stroke:CY, 'stroke-width':'0.9', 'stroke-opacity':'0.22', 'stroke-dasharray':'5 8'}));
+ hg.appendChild(el('ellipse',{cx:ex, cy:ey, rx:'25', ry:'7.4', fill:'none', stroke:CY, 'stroke-width':'1', 'stroke-opacity':'0.38'}));
+ hg.appendChild(el('ellipse',{class:'holo-pulse', cx:ex, cy:ey, rx:'19', ry:'5.6', fill:'none', stroke:CY, 'stroke-width':'1'}));
+ hg.appendChild(el('ellipse',{cx:ex, cy:ey, rx:'19', ry:'5.6', fill:'rgba(127,230,255,0.10)', stroke:CY, 'stroke-width':'1.4', 'stroke-opacity':'0.75'}));
+ hg.appendChild(el('ellipse',{cx:ex, cy:ey, rx:'10', ry:'2.9', fill:'rgba(191,242,255,0.22)', stroke:'#bdf2ff', 'stroke-width':'0.8', 'stroke-opacity':'0.8'}));
+ hg.appendChild(el('circle',{cx:ex, cy:ey-1.2, r:'6.5', fill:CY, opacity:'0.35', filter:'url(#softGlow)'}));
+ hg.appendChild(el('circle',{cx:ex, cy:ey-1.2, r:'2.4', fill:'#eaffff'}));
+ nG.appendChild(hg);
+
+ buildPulses(pG);
+ refreshMapGlow();
+}
+
+function buildPulses(pG){
+ if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+ ALL_EDGES.forEach(([a,b,kind],i)=>{
+   const dur=(4 + (i%6)*0.45).toFixed(2);
+   const c=el('circle',{class:'pulse', r: kind==='c'?'2.2':'1.8', fill:'#dffaff', opacity: kind==='c'?'0.65':'0.5'});
+   const am=el('animateMotion',{dur:dur+'s', begin:((i*0.31)%dur).toFixed(2)+'s', repeatCount:'indefinite'});
+   const mp=el('mpath',{}); const href='#edge-'+i; mp.setAttributeNS('http://www.w3.org/1999/xlink','href',href); mp.setAttribute('href',href);
+   am.appendChild(mp); c.appendChild(am); pG.appendChild(c);
+ });
+}
+
+function refreshMapGlow(){
+ const seen=getSeen();
+ TOPIC_IDS.forEach(id=>{
+   const s=STATS.byTopic[id]||{total:0,done:0,subcats:{}}; const p=pct(s.done,s.total);
+   const ring=document.getElementById('ring-'+id);
+   if(ring){ const circ=2*Math.PI*(R+6); ring.setAttribute('stroke-dasharray', `${circ*p/100} ${circ}`); }
+   const glow=document.getElementById('glow-'+id);
+   if(glow){ glow.setAttribute('opacity', s.total? (0.12 + 0.46*p/100).toFixed(2) : '0'); glow.setAttribute('r', R+3+p*0.12); }
+   const pv=document.getElementById('pv-'+id); if(pv) pv.textContent = s.total? `${p}%` : '';
+   const body=document.getElementById('c-'+id);
+   if(body && (!activeTopic || activeTopic!==id)){ body.setAttribute('fill', s.total? hexA(COLORS[id], 0.06+0.10*p/100) : '#070c18'); body.setAttribute('stroke',COLORS[id]); body.setAttribute('stroke-width','2.2'); }
+   (SUBCATS[id]||[]).forEach((sub,i)=>{
+     const dot=document.getElementById(`sat-${id}-${i}`); if(!dot) return;
+     const ss=(s.subcats&&s.subcats[sub])||{total:0,done:0};
+     if(ss.total>0 && ss.done>=ss.total){ dot.setAttribute('fill', COLORS[id]); dot.setAttribute('stroke-opacity','1'); dot.setAttribute('r','3.1'); }
+     else if(ss.done>0){ dot.setAttribute('fill', hexA(COLORS[id],0.5)); dot.setAttribute('stroke-opacity','0.85'); dot.setAttribute('r','2.7'); }
+     else { dot.setAttribute('fill','#0a1020'); dot.setAttribute('stroke-opacity','0.3'); dot.setAttribute('r','2.4'); }
+   });
+ });
+
+ // YOU node: locked until 84% of core-topic XP is collected
+ const m=computeXpModel();
+ const youRing=document.getElementById('you-ring');
+ if(youRing){
+   const circ=2*Math.PI*34, yp=m.youTotal? pct(m.youDone,m.youTotal):0;
+   youRing.setAttribute('stroke-dasharray', m.youUnlocked? `${circ*yp/100} ${circ}` : `0 ${circ}`);
+ }
+ const youLock=document.getElementById('you-lock'), youPct=document.getElementById('you-pct'), youNode=document.getElementById('node-you');
+ if(youLock&&youPct){
+   youLock.style.opacity = m.youUnlocked? '0' : '0.85';
+   youPct.style.opacity = m.youUnlocked? '0.9' : '0';
+   if(m.youUnlocked) youPct.textContent = m.youTotal? `${pct(m.youDone,m.youTotal)}%` : 'READY';
+ }
+ if(youNode) youNode.style.opacity = m.youUnlocked? '1' : '0.55';
+}
+function highlightEdges(id,on){
+ document.querySelectorAll('#lines .axon').forEach(ax=>{ if(ax.getAttribute('data-a')===id||ax.getAttribute('data-b')===id) ax.classList.toggle('lit',on); });
+}
+
+// ===== navigation =====
+function showPage(p) {
+ document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+ document.querySelectorAll('.ib-btn').forEach(el=>el.classList.remove('active'));
+ document.getElementById('page-'+p).classList.add('active');
+ document.getElementById('ib-'+p).classList.add('active');
+ if(p==='library')    buildLibPage('articles','lib-wrap');
+ if(p==='flashcards') buildLibPage('flashcards','fc-wrap');
+ if(p==='challenges') buildLibPage('challenges','ch-wrap');
+ if(p==='diary')      loadDiaryEntries();
+}
+
+let activeTopic=null,activeSubcat=null,activeTab='article',activeItems=[];
+
+function openTopicPanel(id){
+ activeTopic=id;activeSubcat=null;activeTab='article';
+ refreshMapGlow();
+ buildMetrics(); // reflects the open topic in the dock (active region row + brighter donut slice)
+ const cc=document.getElementById('c-'+id);
+ if(cc){cc.setAttribute('fill',hexA(COLORS[id],0.22));cc.setAttribute('stroke','#fff');cc.setAttribute('stroke-width','2.6');}
+ document.getElementById('cp-dot').style.color=COLORS[id];
+ document.getElementById('cp-dot').style.background=COLORS[id];
+ document.getElementById('cp-title').textContent=LABELS[id];
+ document.getElementById('cpanel').style.setProperty('--panel-accent', COLORS[id]);
+ renderPanelTabs();
+ document.getElementById('cpanel').classList.add('open');
+ loadPanel();
+}
+function renderPanelTabs(){
+ document.getElementById('cp-tabs').innerHTML=
+   [['article','Library'],['flashcard','Cards'],['challenge','Quests']].map(([id,lbl])=>
+     `<button class="cp-tab${id===activeTab?' active':''}" onclick="switchPanelTab('${id}')">${lbl}</button>`).join('');
+}
+function switchPanelTab(tab){activeTab=tab;activeSubcat=null;renderPanelTabs();loadPanel();}
+
+async function loadPanel(){
+ const body=document.getElementById('cp-body');
+ body.innerHTML='<div class="loading">Syncing node vectors…</div>';
+ try{
+   const col = activeTab==='flashcard'?'flashcards':activeTab==='challenge'?'challenges':'articles';
+   const all = RAW.items.length ? RAW.items.filter(i=>i._col===col) : await fsAll(col);
+   const items=all.filter(i=>i.topic===activeTopic&&(activeSubcat?i.subcat===activeSubcat:true));
+   activeItems=items;
+   const seen=getSeen(), done=items.filter(i=>seen[i.id]).length;
+   updateProg(done,items.length,COLORS[activeTopic]);
+   const subs=(SUBCATS[activeTopic]||[]).filter(s=>all.some(i=>i.topic===activeTopic&&i.subcat===s));
+   let html='';
+   if(subs.length){
+     html+=`<div class="sub-pills"><select class="lib-subcat-select" onchange="filterSub(this.value||null)">
+       <option value=""${!activeSubcat?' selected':''}>All Subtopics</option>
+       ${subs.map(s=>`<option value="${escHtml(s)}"${activeSubcat===s?' selected':''}>${escHtml(s)}</option>`).join('')}
+     </select></div>`;
+   }
+   if(!items.length){html+='<div class="empty">No modules deployed in this topic yet.</div>';body.innerHTML=html;body.scrollTop=0;return;}
+   const acc=hexA(COLORS[activeTopic],1);
+   if(activeTab==='flashcard'){
+     html+=items.map((item,i)=>`
+<div class="cc" style="--cc-accent:${acc}" onclick="openFC(${i})">
+<div class="cc-title">${item.title}<span class="cc-done${seen[item.id]?' done':''}">✓</span></div>
+<div class="cc-meta"><i data-lucide="layers" style="width:12px"></i> ${item.pairs?.length||0} cards${item.subcat?' · '+item.subcat:''}</div>
+</div>`).join('');
+   } else if(activeTab==='challenge'){
+     html+=items.map((item,i)=>`
+<div class="cc" style="--cc-accent:${acc}" onclick="openChallenge(${i})">
+<div class="cc-title">${item.title}<span class="cc-done${seen[item.id]?' done':''}">✓</span></div>
+<div class="cc-meta"><i data-lucide="zap" style="width:12px"></i> ${item.options?.length||0} outcomes${item.subcat?' · '+item.subcat:''}</div>
+</div>`).join('');
+   } else {
+     html+=items.map((item,i)=>`
+<div class="cc" style="--cc-accent:${acc}" onclick="openArt(${i})">
+<div class="cc-title">${item.title}<span class="cc-done${seen[item.id]?' done':''}">✓</span></div>
+<div class="cc-meta"><i data-lucide="file-text" style="width:12px"></i> ${(item.content||'').replace(/[#*_\n]/g,' ').substring(0,72)}…</div>
+</div>`).join('');
+   }
+   body.innerHTML=html; body.scrollTop=0; lucide.createIcons();
+ }catch(e){body.innerHTML=`<div class="empty">⚠ Core link error: ${e.message}</div>`;}
+}
+function filterSub(s){activeSubcat=s;loadPanel();}
+function updateProg(done,total,color){
+ const w=document.getElementById('prog-wrap');
+ if(!total){w.style.display='none';return;}
+ w.style.display='block';
+ const pp=Math.round(done/total*100);
+ document.getElementById('prog-label').textContent=`Integration: ${done} / ${total}`;
+ document.getElementById('prog-pct').textContent=pp+'%';
+ const f=document.getElementById('prog-fill'); f.style.width=pp+'%'; f.style.background=color;
+}
+// ===== linked modules (article → its flashcards & quest on the same subtopic) =====
+async function findSiblings(item){
+ if(!item||!item.subcat) return {};
+ async function look(col){
+   let pool=(RAW.items||[]).filter(x=>x._col===col);
+   if(!pool.length){ try{ pool=await fsAll(col); }catch(e){ pool=[]; } }
+   return pool.find(x=>x.topic===item.topic && x.subcat===item.subcat)||null;
+ }
+ const [fc,ch]=await Promise.all([look('flashcards'),look('challenges')]);
+ return {fc,ch};
+}
+function linkedFooter(fc,ch,onFc,onCh){
+ if(!fc&&!ch) return '';
+ let b='';
+ if(fc) b+=`<button class="linked-btn" style="--lk:var(--c-cards)" onclick="${onFc}"><i data-lucide="layers"></i><span class="lk-txt"><span class="lk-t">Flashcards</span><span class="lk-s">${fc.pairs?.length||0} cards on this subtopic</span></span><i data-lucide="chevron-right" class="lk-arrow"></i></button>`;
+ if(ch) b+=`<button class="linked-btn" style="--lk:var(--c-challenges)" onclick="${onCh}"><i data-lucide="zap"></i><span class="lk-txt"><span class="lk-t">Quest</span><span class="lk-s">Test yourself in a scenario</span></span><i data-lucide="chevron-right" class="lk-arrow"></i></button>`;
+ return `<div class="linked-block"><div class="linked-head"><i data-lucide="git-branch" style="width:13px;height:13px"></i> Continue this subtopic</div>${b}</div>`;
+}
+async function getItemCached(col,id){
+ let it=(RAW.items||[]).find(x=>x._col===col&&x.id===id);
+ if(it) return it;
+ const snap=await db.collection(col).doc(id).get(); return {id:snap.id,...snap.data()};
+}
+function fcListHtml(item){
+ return (item.pairs||[]).map(p=>`<div class="fc-card" onclick="this.classList.toggle('flipped')"><div class="fc-front">${p.q}</div><div class="fc-back">${p.a}</div><div class="fc-hint">tap to flip</div></div>`).join('');
+}
+// map side-panel context — renders into cp-body, back returns to the article
+async function panelShowLinked(col,id,backArtIdx){
+ const item=await getItemCached(col,id); markSeen(item.id);
+ const back=`<button class="back-btn" onclick="openArt(${backArtIdx})">← Back to article</button>`;
+ const body=document.getElementById('cp-body');
+ if(col==='flashcards'){
+   body.innerHTML=back+`<div style="font-size:13px;color:var(--text-dim);margin-bottom:14px;font-weight:700;">${item.title}</div>`+fcListHtml(item);
+ } else {
+   body.innerHTML=challengeView(item,back);
+ }
+ body.scrollTop=0;
+ lucide.createIcons();
+}
+// full library-page context — renders into wrapper, back returns to the article
+async function libShowLinked(col,id,wrapperId,backArtId){
+ const item=await getItemCached(col,id); markSeen(item.id);
+ const el=document.getElementById(wrapperId);
+ const back=`<button class="back-btn" onclick="libOpenArt('${backArtId}','${wrapperId}','articles')">← Back to article</button>`;
+ if(col==='flashcards'){
+   el.innerHTML=`<div style="max-width:620px;margin:0 auto;">`+back+`<div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px;">${item.title}</div>`+fcListHtml(item)+`</div>`;
+ } else {
+   el.innerHTML=`<div style="max-width:720px;margin:0 auto;">`+challengeView(item,back)+`</div>`;
+ }
+ el.scrollTop=0;
+ lucide.createIcons();
+}
+async function openArt(idx){
+ const item=activeItems[idx];markSeen(item.id);
+ const {fc,ch}=await findSiblings(item);
+ const foot=linkedFooter(fc,ch,`panelShowLinked('flashcards','${fc?fc.id:''}',${idx})`,`panelShowLinked('challenges','${ch?ch.id:''}',${idx})`);
+ document.getElementById('cp-body').innerHTML=`
+<button class="back-btn" onclick="loadPanel()">← Topic modules</button>
+<div class="article-reader"><h1>${item.title}</h1>
+   ${item.image_url?`<img src="${item.image_url}" style="width:100%; border-radius:12px; margin-bottom:14px;"/>`:''}
+   ${md(stripH1(item.content||''))}${foot}</div>`;
+ document.getElementById('cp-body').scrollTop=0;
+ lucide.createIcons();
+}
+function openFC(idx){
+ const item=activeItems[idx];markSeen(item.id);
+ if(!item.pairs?.length){document.getElementById('cp-body').innerHTML='<div class="empty">Deck empty.</div>';return;}
+ document.getElementById('cp-body').innerHTML=`
+<button class="back-btn" onclick="loadPanel()">← Topic modules</button>
+<div style="font-size:13px;color:var(--text-dim);margin-bottom:14px; font-weight:700;">${item.title}</div>
+   ${item.pairs.map(p=>`<div class="fc-card" onclick="this.classList.toggle('flipped')"><div class="fc-front">${p.q}</div><div class="fc-back">${p.a}</div><div class="fc-hint">tap to flip</div></div>`).join('')}`;
+ document.getElementById('cp-body').scrollTop=0;
+}
+function closePanel(){
+ document.getElementById('cpanel').classList.remove('open');
+ activeTopic=null; refreshMapGlow(); buildMetrics();
+}
+// Clicking anywhere on the Map page outside the open reading panel closes it —
+// except on the controls that open/switch it (topic nodes, sidebar topic rows,
+// donut segments), which already handle their own panel state.
+document.addEventListener('click', (e)=>{
+ const panel=document.getElementById('cpanel');
+ const mapPage=document.getElementById('page-map');
+ if(!panel || !panel.classList.contains('open')) return;
+ if(!mapPage || !mapPage.classList.contains('active')) return;
+ if(panel.contains(e.target)) return;
+ if(e.target.closest('.node-g') || e.target.closest('.region-row') || e.target.closest('.donut-seg')) return;
+ closePanel();
+});
+
+// ===== content dock: Map-style "Mind Status" stat panel, reused on Library/
+// Flashcards/Challenges, filtered to that page's content type. Mirrors the
+// sizing/markup of the Map page's own #metrics-dock so the panel lines up
+// consistently across all four pages, but swaps its content: when no topic is
+// selected it shows the same topics+progress-bar list; once the user drills
+// into a topic it swaps that list for the topic's own subtopics (full name +
+// checkmark) and drops the Strongest/Focus-next KPI cards entirely, so the
+// (often much longer) subtopic list gets the extra room instead.
+function toggleDock(id){ const d=document.getElementById(id); if(d) d.classList.toggle('open'); }
+const DOCK_MAP = { 'lib-wrap':{pageKey:'library', col:'articles'}, 'fc-wrap':{pageKey:'flashcards', col:'flashcards'}, 'ch-wrap':{pageKey:'challenges', col:'challenges'} };
+const DOCK_LABELS = { library:'Library Status', flashcards:'Card Status', challenges:'Quest Status' };
+function refreshContentDock(wrapperId){
+ const m=DOCK_MAP[wrapperId]; if(!m) return;
+ buildContentDock(m.pageKey, m.col, wrapperId);
+}
+function buildDonutGeneric(svgId, stats, wrapperId){
+ const svg=document.getElementById(svgId); if(!svg) return;
+ const cx=88,cy=88,r=66,sw=13,gap=5,seg=360/TOPICS.length;
+ let out='';
+ TOPICS.forEach((t,i)=>{
+   const s=stats.byTopic[t.id]||{total:0,done:0}; const p=pct(s.done,s.total);
+   const a0=i*seg+gap/2, a1=(i+1)*seg-gap/2, dim=s.total===0;
+   out+=`<path d="${arcPath(cx,cy,r,a0,a1)}" fill="none" stroke="${t.color}" stroke-opacity="${dim?0.1:0.16}" stroke-width="${sw}" stroke-linecap="round"/>`;
+   if(s.total>0 && p>0){
+     const aF=a0+(a1-a0)*p/100;
+     out+=`<path d="${arcPath(cx,cy,r,a0,Math.max(a0+0.4,aF))}" fill="none" stroke="${t.color}" stroke-width="${sw}" stroke-linecap="round" onclick="libSetTopicFilter('${wrapperId}','${t.id}')" style="cursor:pointer"><title>${t.label}: ${p}% (${s.done}/${s.total})</title></path>`;
+   }
+ });
+ svg.innerHTML=out;
+}
+function dockSubcatClick(wrapperId, subcat){
+ const filt=LIB_FILTERS[wrapperId]||{};
+ libSetSubcatFilter(wrapperId, filt.subcat===subcat ? '' : subcat);
+}
+function buildContentDock(pageKey, col, wrapperId){
+ const container=document.getElementById('dock-'+pageKey); if(!container) return;
+ const stats=statsForCol(col);
+ const filt=LIB_FILTERS[wrapperId]||{topic:'all',subcat:''};
+ const o=stats.overall, p=pct(o.done,o.total);
+ const topicsWith=TOPIC_IDS.filter(id=>(stats.byTopic[id]||{}).total>0).length;
+ const donutId='dock-donut-'+pageKey;
+
+ let listHtml, sectionTitle, hint;
+ if(filt.topic!=='all'){
+   const topicObj=TOPICS.find(t=>t.id===filt.topic);
+   const t=stats.byTopic[filt.topic]||{subcats:{}};
+   const subs=Object.keys(t.subcats||{}).filter(s=>t.subcats[s].total>0);
+   sectionTitle=topicObj?topicObj.label:'Topic'; hint='tap to filter';
+   listHtml=`<div class="dock-back-row" onclick="libSetTopicFilter('${wrapperId}','all')"><i data-lucide="arrow-left" style="width:12px"></i> All topics</div>` +
+     (subs.length? subs.map(s=>{
+       const ss=t.subcats[s]; const complete=ss.total>0 && ss.done>=ss.total; const active=filt.subcat===s;
+       return `<div class="subtopic-row${active?' active':''}" data-subcat="${escHtml(s)}" onclick="dockSubcatClick('${wrapperId}', this.dataset.subcat)" style="--rc:${topicObj?topicObj.color:'var(--accent)'}">
+         <span class="subtopic-check${complete?' done':''}">${complete?'✓':''}</span>
+         <span class="subtopic-name">${escHtml(s)}</span>
+         <span class="subtopic-count">${ss.done}/${ss.total}</span>
+       </div>`;
+     }).join('') : `<div class="empty" style="padding:16px 8px;font-size:11.5px;">No subtopics yet.</div>`);
+ } else {
+   sectionTitle='Topics'; hint='tap to open';
+   listHtml=TOPICS.map(t=>{
+     const s=stats.byTopic[t.id]||{total:0,done:0}; const pp=pct(s.done,s.total); const dim=s.total===0;
+     return `<div class="region-row" onclick="libSetTopicFilter('${wrapperId}','${t.id}')" style="--rc:${t.color};${dim?'opacity:.42':''}">
+       <span class="region-dot" style="background:${t.color};box-shadow:0 0 8px ${t.color}"></span>
+       <span class="region-name">${t.label}</span>
+       <span class="region-bar"><span class="region-fill" style="width:${pp}%;background:${t.color}"></span></span>
+       <span class="region-val">${dim?'—':pp+'%'}</span>
+     </div>`;
+   }).join('');
+ }
+
+ container.innerHTML=`
+   <div class="dock-status">
+     <div class="dock-status-top">
+       <span class="dock-status-rank"><b>—</b></span>
+       <span class="dock-status-xpnum">0 / 0 XP</span>
+     </div>
+     <div class="dock-status-xp-track"><div class="dock-status-xp-fill"></div></div>
+     <div class="dock-status-streak">⚡ 0-day streak</div>
+   </div>
+   <div class="md-header-row">
+     <div class="md-eyebrow"><i data-lucide="activity" style="width:13px"></i> ${DOCK_LABELS[pageKey]||'Status'}</div>
+     <div class="md-overall">
+       <div class="md-overall-bar"><div class="md-overall-fill" style="width:${p}%"></div></div>
+       <span class="md-overall-pct">${p}%</span>
+     </div>
+   </div>
+   <div class="md-activity-row">
+     <div class="donut-host-sm"><svg id="${donutId}" viewBox="0 0 176 176"></svg></div>
+     <div class="md-mastered">
+       <div class="big">${o.done} / ${o.total}</div>
+       <div class="sub">modules across ${topicsWith} active topic${topicsWith===1?'':'s'}</div>
+     </div>
+   </div>
+   <div class="md-section-title">${sectionTitle} <span class="hint">${hint}</span></div>
+   <div class="md-topics-list">${listHtml}</div>
+ `;
+ buildDonutGeneric(donutId, stats, wrapperId);
+ lucide.createIcons();
+ updateTopbar();
+}
+
+// Library pages (articles / flashcards / challenges): data is fetched once per
+// wrapper and cached; filter pills/dropdown just re-render from the cache so
+// switching topic/subtopic is instant and never re-hits Firestore.
+let LIB_CACHE={}, LIB_FILTERS={};
+async function buildLibPage(col, wrapperId){
+ const el=document.getElementById(wrapperId);
+ el.innerHTML='<div class="loading">Loading modules…</div>';
+ el.style.cssText='height:100%; overflow-y:auto; padding:18px 32px 22px;';
+ try{
+   const all=await fsAll(col);
+   LIB_CACHE[wrapperId]={col,all};
+   if(!LIB_FILTERS[wrapperId]) LIB_FILTERS[wrapperId]={topic:'all',subcat:''};
+   renderLibList(wrapperId);
+   refreshContentDock(wrapperId);
+ }catch(e){el.innerHTML=`<div class="empty">⚠ Architecture offline: ${e.message}</div>`;}
+}
+function libSetTopicFilter(wrapperId, topicId){
+ LIB_FILTERS[wrapperId]={topic:topicId, subcat:''};
+ renderLibList(wrapperId);
+ refreshContentDock(wrapperId);
+}
+function libSetSubcatFilter(wrapperId, subcat){
+ LIB_FILTERS[wrapperId].subcat=subcat;
+ renderLibList(wrapperId);
+ refreshContentDock(wrapperId);
+}
+// ===== item-map: map-page-style node network for Library/Flashcards/Challenges =====
+// Reduces a content item's title down to a short label for its node, and renders
+// a radial network (topic icon at the center, one node per article/flashcard/quest
+// scattered around it, connected by the same animated axon/pulse treatment as the
+// main brain map). Ring layout auto-adapts to however many items exist, so adding
+// or removing subtopics/content just reflows the network — no fixed positions.
+// Wraps a full title onto several short lines instead of truncating it, so the
+// complete content title is always readable under its node.
+function wrapLabelLines(title, maxChars=15){
+ const words=String(title||'').trim().split(/\s+/).filter(Boolean);
+ const lines=[]; let cur='';
+ words.forEach(w=>{
+   const test=cur?cur+' '+w:w;
+   if(test.length>maxChars && cur){ lines.push(cur); cur=w; }
+   else cur=test;
+ });
+ if(cur) lines.push(cur);
+ return lines.length?lines:[''];
+}
+function typeIconSvg(type,cx,cy,col){
+ const s=`fill="none" stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`;
+ if(type==='article') return `<g ${s}>
+   <path d="M${cx-8},${cy-6} C${cx-8},${cy-7.4} ${cx-1.2},${cy-7.4} ${cx-0.6},${cy-5} L${cx-0.6},${cy+7} C${cx-1.2},${cy+4.8} ${cx-8},${cy+4.8} ${cx-8},${cy+6.2} Z"/>
+   <path d="M${cx+8},${cy-6} C${cx+8},${cy-7.4} ${cx+1.2},${cy-7.4} ${cx+0.6},${cy-5} L${cx+0.6},${cy+7} C${cx+1.2},${cy+4.8} ${cx+8},${cy+4.8} ${cx+8},${cy+6.2} Z"/>
+ </g>`;
+ if(type==='flashcard') return `<g ${s}>
+   <rect x="${cx-9}" y="${cy-8}" width="13" height="9" rx="2"/>
+   <rect x="${cx-4}" y="${cy-2}" width="13" height="9" rx="2"/>
+ </g>`;
+ if(type==='challenge') return `<polygon points="${cx+2},${cy-10} ${cx-6.5},${cy+1.5} ${cx-0.5},${cy+1.5} ${cx-2.5},${cy+10} ${cx+7},${cy-2.5} ${cx+1},${cy-2.5}" fill="${col}" fill-opacity="0.9" stroke="${col}" stroke-width="1" stroke-linejoin="round"/>`;
+ return '';
+}
+function buildItemMapBlock(topic, items, wrapperId, col, type, done){
+ const seen=getSeen();
+ const nodeR=23, centerR=40, r0=158, rStep=132, xScale=1.32;
+ const AXON='#7fe6ff'; // same hue as the brain outline/grooves on the Map page
+ // ring layout: fill an inner ring first, then push extra items to progressively
+ // wider rings (capacity grows with ring so per-node arc length stays roughly
+ // even); alternating rings are rotated half a slot so nodes interleave instead
+ // of stacking radially, and each node remembers its own arc length so its
+ // label can be wrapped to fit that slot without bleeding into a neighbor.
+ const nodePos=[]; let idx=0, ring=0;
+ while(idx<items.length){
+   const capacity=Math.min(5+ring*4, items.length-idx);
+   const r=r0+ring*rStep;
+   const stagger=(ring%2)?(Math.PI/capacity):0;
+   const arcLen=(2*Math.PI*r)/capacity;
+   for(let k=0;k<capacity;k++) nodePos.push({angle:(2*Math.PI*k/capacity)-Math.PI/2+stagger, r, arcLen});
+   idx+=capacity; ring++;
+ }
+ const maxR=r0+Math.max(0,ring-1)*rStep+nodeR+40;
+ const H=maxR*2, W=maxR*2*xScale, cx=W/2, cy=H/2;
+ const uid=(wrapperId+'-'+topic.id).replace(/[^a-zA-Z0-9_-]/g,'');
+ let lines='', pulses='', nodes='';
+ items.forEach((item,i)=>{
+   const {angle,r,arcLen}=nodePos[i];
+   const x=cx+Math.cos(angle)*r*xScale, y=cy+Math.sin(angle)*r;
+   const eid=`im-e-${uid}-${i}`;
+   lines+=`<path id="${eid}" class="im-axon" d="M${cx.toFixed(1)},${cy.toFixed(1)} Q${((cx+x)/2).toFixed(1)},${((cy+y)/2).toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}" fill="none" stroke="${AXON}" stroke-width="1" stroke-opacity="0.22"/>`;
+   pulses+=`<circle class="im-pulse" r="1.8" fill="#dffaff" opacity="0.5"><animateMotion dur="${(4+(i%6)*0.4).toFixed(2)}s" begin="${((i*0.31)%4).toFixed(2)}s" repeatCount="indefinite"><mpath href="#${eid}"/></animateMotion></circle>`;
+   const done=!!seen[item.id];
+   // available label width per line ≈ its slot's arc length (capped both ways
+   // so long titles wrap tighter in crowded rings and don't balloon out in
+   // sparse ones — this is what keeps a label from bleeding into a neighbor)
+   const maxChars=Math.max(9, Math.min(19, Math.round(arcLen/7.6)));
+   const labelLines=wrapLabelLines(item.title, maxChars);
+   const labelTspans=labelLines.map((ln,li)=>`<tspan x="${x.toFixed(1)}" dy="${li===0?0:14}">${escHtml(ln)}</tspan>`).join('');
+   let onclick;
+   if(type==='flashcard') onclick=`libOpenFC('${item.id}','${wrapperId}')`;
+   else if(type==='challenge') onclick=`libOpenChallenge('${item.id}','${wrapperId}')`;
+   else onclick=`libOpenArt('${item.id}','${wrapperId}','${col}')`;
+   nodes+=`<g class="im-node" onclick="${onclick}" onmouseenter="document.getElementById('${eid}').classList.add('lit')" onmouseleave="document.getElementById('${eid}').classList.remove('lit')">
+     <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${nodeR+3}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+     <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${nodeR}" fill="${done?hexA(topic.color,0.22):'#070c18'}" stroke="${topic.color}" stroke-width="2"/>
+     ${typeIconSvg(type,x,y,lighten(topic.color,0.55))}
+     ${done?`<circle cx="${(x+nodeR-5).toFixed(1)}" cy="${(y-nodeR+5).toFixed(1)}" r="6.5" fill="${topic.color}"/><text x="${(x+nodeR-5).toFixed(1)}" y="${(y-nodeR+8).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#06101f">✓</text>`:''}
+     <text x="${x.toFixed(1)}" y="${(y+nodeR+16).toFixed(1)}" text-anchor="middle" font-size="12.5" font-weight="600" fill="#cbd5e1" font-family="var(--font-sans)">${labelTspans}</text>
+     <title>${escHtml(item.title)}${item.subcat?' · '+escHtml(item.subcat):''}</title>
+   </g>`;
+ });
+ const pctDone=items.length?Math.round(done/items.length*100):0;
+ return `<div class="item-map" style="--tc:${topic.color}">
+   <div class="im-badge">
+     <span class="im-badge-icon"><svg viewBox="0 0 22 22">${iconSvg(topic.id,11,11,lighten(topic.color,0.55))}</svg></span>
+     <span class="im-badge-name" style="color:${topic.color}">${topic.label}</span>
+     <span class="im-badge-count">${done}/${items.length} · ${pctDone}%</span>
+   </div>
+   <div class="im-zoom-controls">
+     <button type="button" class="im-zoom-btn im-zoom-in" title="Zoom in">+</button>
+     <button type="button" class="im-zoom-btn im-zoom-out" title="Zoom out">−</button>
+     <button type="button" class="im-zoom-btn im-zoom-reset" title="Reset view"><i data-lucide="maximize" style="width:12px"></i></button>
+   </div>
+   <svg class="item-map-svg" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" preserveAspectRatio="xMidYMid meet">
+     <g class="im-lines">${lines}</g>
+     <g class="im-pulses">${pulses}</g>
+     <g class="im-center">
+       <circle class="breathe" cx="${cx}" cy="${cy}" r="${centerR+10}" fill="${topic.color}" opacity="0.1"/>
+       <circle cx="${cx}" cy="${cy}" r="${centerR}" fill="#070c18" stroke="${topic.color}" stroke-width="2.6"/>
+       ${iconSvg(topic.id,cx,cy,lighten(topic.color,0.55))}
+     </g>
+     <g class="im-nodes">${nodes}</g>
+   </svg>
+ </div>`;
+}
+// simple scrollable card list — the alternative to the pannable node network,
+// switched to via the map/list toggle (mainly meant for small screens where
+// panning/zooming a dense network is awkward)
+function buildItemListBlock(topic, items, wrapperId, col, type, done){
+ const seen=getSeen();
+ const acc=topic.color;
+ const rows=items.map(item=>{
+   const doneItem=!!seen[item.id];
+   let onclick, icon, meta;
+   if(type==='challenge'){ onclick=`libOpenChallenge('${item.id}','${wrapperId}')`; icon='zap'; meta=(item.options?.length||0)+' outcomes'; }
+   else if(type==='flashcard'){ onclick=`libOpenFC('${item.id}','${wrapperId}')`; icon='layers'; meta=(item.pairs?.length||0)+' cards'; }
+   else { onclick=`libOpenArt('${item.id}','${wrapperId}','${col}')`; icon='file-text'; meta=(item.content||'').replace(/[#*_\n]/g,' ').substring(0,60)+'…'; }
+   return `<div class="cc" style="--cc-accent:${acc}" onclick="${onclick}">
+<div class="cc-title">${escHtml(item.title)}<span class="cc-done${doneItem?' done':''}">✓</span></div>
+${item.subcat?`<div class="cc-subcat" style="color:${acc}">${escHtml(item.subcat)}</div>`:''}
+<div class="cc-meta"><i data-lucide="${icon}" style="width:12px"></i> ${escHtml(meta)}</div>
+</div>`;
+ }).join('');
+ const pctDone=items.length?Math.round(done/items.length*100):0;
+ return `<div class="item-map list-mode" style="--tc:${acc}">
+   <div class="lib-list-header">
+     <span class="im-badge-icon"><svg viewBox="0 0 22 22">${iconSvg(topic.id,11,11,lighten(acc,0.55))}</svg></span>
+     <span class="im-badge-name" style="color:${acc}">${topic.label}</span>
+     <span class="im-badge-count">${done}/${items.length} · ${pctDone}%</span>
+   </div>
+   <div class="lib-grid">${rows}</div>
+ </div>`;
+}
+// wires up pinch/drag/wheel pan+zoom on every rendered node-network map (skips
+// list-mode boxes, which have nothing to zoom). Touch-action starts as
+// pan-y (page scrolls normally); once zoomed past 1x it switches to none so
+// dragging pans the map instead of the page — reset/pinch back to 1x restores
+// normal scrolling.
+function initItemMapZoomAll(root){
+ root.querySelectorAll('.item-map:not(.list-mode)').forEach(box=>{
+   const svg=box.querySelector('.item-map-svg'); if(!svg) return;
+   let scale=1, tx=0, ty=0;
+   const MIN=1, MAX=4;
+   function apply(){
+     svg.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;
+     svg.style.touchAction = scale>1 ? 'none' : 'pan-y';
+   }
+   function clampScale(){ scale=Math.min(MAX,Math.max(MIN,scale)); if(scale<=1){scale=1;tx=0;ty=0;} }
+   let dragging=false,lastX=0,lastY=0;
+   svg.addEventListener('pointerdown', e=>{
+     if(scale<=1) return;
+     dragging=true; lastX=e.clientX; lastY=e.clientY;
+     try{svg.setPointerCapture(e.pointerId);}catch(err){}
+   });
+   svg.addEventListener('pointermove', e=>{
+     if(!dragging) return;
+     tx+=e.clientX-lastX; ty+=e.clientY-lastY;
+     lastX=e.clientX; lastY=e.clientY; apply();
+   });
+   ['pointerup','pointercancel','pointerleave'].forEach(ev=>svg.addEventListener(ev, ()=>{dragging=false;}));
+   box.addEventListener('wheel', e=>{
+     e.preventDefault();
+     scale += (e.deltaY>0?-0.15:0.15);
+     clampScale(); apply();
+   }, {passive:false});
+   let pinchDist=null;
+   svg.addEventListener('touchstart', e=>{
+     if(e.touches.length===2){
+       pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+     }
+   }, {passive:true});
+   svg.addEventListener('touchmove', e=>{
+     if(e.touches.length===2){
+       e.preventDefault();
+       const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+       if(pinchDist) scale *= d/pinchDist;
+       pinchDist=d; clampScale(); apply();
+     }
+   }, {passive:false});
+   svg.addEventListener('touchend', e=>{ if(e.touches.length<2) pinchDist=null; });
+   const zin=box.querySelector('.im-zoom-in'), zout=box.querySelector('.im-zoom-out'), zreset=box.querySelector('.im-zoom-reset');
+   if(zin) zin.onclick=()=>{scale+=0.4;clampScale();apply();};
+   if(zout) zout.onclick=()=>{scale-=0.4;clampScale();apply();};
+   if(zreset) zreset.onclick=()=>{scale=1;tx=0;ty=0;apply();};
+   apply();
+ });
+}
+let LIB_VIEW_MODE={};
+function libToggleView(wrapperId){
+ LIB_VIEW_MODE[wrapperId]=(LIB_VIEW_MODE[wrapperId]==='list')?'map':'list';
+ renderLibList(wrapperId);
+}
+function renderLibList(wrapperId){
+ const cache=LIB_CACHE[wrapperId]; if(!cache) return;
+ const {col, all}=cache;
+ const filt=LIB_FILTERS[wrapperId]||{topic:'all',subcat:''};
+ const seen=getSeen(), isCH=col==='challenges';
+ const el=document.getElementById(wrapperId);
+ const topicsWithContent=TOPICS.filter(t=>all.some(i=>i.topic===t.id));
+ const mode=LIB_VIEW_MODE[wrapperId]||'map';
+
+ let bar=`<div class="lib-filterbar"><div class="lib-filterbar-row"><div class="lib-topic-filters">
+   <button class="lib-tpill${filt.topic==='all'?' active':''}" style="--tc:var(--accent)" onclick="libSetTopicFilter('${wrapperId}','all')">All Topics</button>
+   ${topicsWithContent.map(t=>`<button class="lib-tpill${filt.topic===t.id?' active':''}" style="--tc:${t.color}" onclick="libSetTopicFilter('${wrapperId}','${t.id}')">${t.label}</button>`).join('')}
+ </div>
+ <button class="lib-view-toggle" onclick="libToggleView('${wrapperId}')"><i data-lucide="${mode==='map'?'list':'share-2'}" style="width:14px"></i> ${mode==='map'?'List view':'Map view'}</button>
+ </div></div>`;
+
+ let items=all;
+ if(filt.topic!=='all') items=items.filter(i=>i.topic===filt.topic);
+ if(filt.subcat) items=items.filter(i=>i.subcat===filt.subcat);
+
+ if(!items.length){ el.innerHTML=bar+'<div class="empty">No modules match this filter yet.</div>'; el.scrollTop=0; lucide.createIcons(); return; }
+
+ const mapType = isCH ? 'challenge' : (col==='flashcards' ? 'flashcard' : 'article');
+
+ let body='';
+ const groupTopics = filt.topic==='all' ? topicsWithContent : topicsWithContent.filter(t=>t.id===filt.topic);
+ for(const topic of groupTopics){
+   const topicItems=items.filter(i=>i.topic===topic.id); if(!topicItems.length) continue;
+   const done=topicItems.filter(i=>seen[i.id]).length;
+   const blockHtml = mode==='list'
+     ? buildItemListBlock(topic, topicItems, wrapperId, col, mapType, done)
+     : buildItemMapBlock(topic, topicItems, wrapperId, col, mapType, done);
+   body+=`<div class="lib-topic-block">${blockHtml}</div>`;
+ }
+ el.innerHTML=bar+`<div class="lib-body">${body}</div>`;
+ el.scrollTop=0;
+ lucide.createIcons();
+ if(mode==='map') initItemMapZoomAll(el);
+}
+async function libOpenArt(id, wrapperId, col){
+ col = col || 'articles';
+ const el=document.getElementById(wrapperId);
+ const snap=await db.collection(col).doc(id).get(); const item={id:snap.id,...snap.data()}; markSeen(item.id);
+ const {fc,ch}=await findSiblings(item);
+ const foot=linkedFooter(fc,ch,`libShowLinked('flashcards','${fc?fc.id:''}','${wrapperId}','${item.id}')`,`libShowLinked('challenges','${ch?ch.id:''}','${wrapperId}','${item.id}')`);
+ el.innerHTML=`<div style="max-width:820px; margin:0 auto;">
+<button class="back-btn" onclick="renderLibList('${wrapperId}')">← Return to database</button>
+<div class="article-reader"><h1>${item.title}</h1>${md(stripH1(item.content||''))}${foot}</div></div>`;
+ el.scrollTop=0;
+ lucide.createIcons();
+}
+async function libOpenFC(id, wrapperId){
+ const el=document.getElementById(wrapperId);
+ const snap=await db.collection('flashcards').doc(id).get(); const item={id:snap.id,...snap.data()}; markSeen(item.id);
+ el.innerHTML=`<div style="max-width:620px; margin:0 auto;">
+<button class="back-btn" onclick="renderLibList('${wrapperId}')">← Return to decks</button>
+<div style="font-size:15px; font-weight:700; color:#fff; margin-bottom:16px;">${item.title}</div>
+   ${(item.pairs||[]).map(p=>`<div class="fc-card" onclick="this.classList.toggle('flipped')"><div class="fc-front">${p.q}</div><div class="fc-back">${p.a}</div><div class="fc-hint">tap to flip</div></div>`).join('')}</div>`;
+ el.scrollTop=0;
+}
+
+let aiInsightActive=false, aiMockGeneratedText="";
+function triggerAiInsight() {
+ const text=document.getElementById('diary-input').value.trim();
+ if(!text){ alert('Type some notes first to allow AI processing.'); return; }
+ aiInsightActive=true;
+ aiMockGeneratedText=`[AI Mental Architecture Analysis]: Detected cognitive parameters shifting towards standard vectors. Processing high emotional core value. Recommendation: Explore "${LABELS['emo']}" or "${LABELS['res']}" nodes inside your map to balance optimization patterns.`;
+ alert("AI analysis simulation complete. Insight attached — save the entry to log it permanently.");
+}
+let selectedMood='';
+function selectMood(btn,mood){ document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel')); btn.classList.add('sel'); selectedMood=mood; }
+async function saveDiaryEntry(){
+ const text=document.getElementById('diary-input').value.trim();
+ if(!text){alert('Empty notes cannot be saved.');return;}
+ const today=new Date().toISOString().split('T')[0];
+ const payload={ text, date:today, mood:selectedMood, created:new Date().toISOString() };
+ if(aiInsightActive) payload.aiInsight=aiMockGeneratedText;
+ await db.collection('diary').add(payload);
+ document.getElementById('diary-input').value=''; document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
+ selectedMood=''; aiInsightActive=false;
+ RAW.diary.push(payload); refreshDashboard(); loadDiaryEntries();
+}
+async function loadDiaryEntries(){
+ const el=document.getElementById('diary-entries');
+ el.innerHTML='<div class="loading">Decoding neural log…</div>';
+ try{
+   const snap=await db.collection('diary').orderBy('created','desc').get();
+   const items=snap.docs.map(d=>({id:d.id,...d.data()})); RAW.diary=items;
+   if(!items.length){el.innerHTML='<div class="empty">No entries yet. Capture your first observation on the left.</div>';return;}
+   el.innerHTML=items.map(item=>`
+<div class="diary-entry">
+<div class="de-header">
+<div class="de-date"><i data-lucide="clock" style="width:11px; display:inline-block; vertical-align:middle;"></i> ${fmtDate(item.date)}</div>
+         ${item.mood?`<span class="de-mood">${item.mood}</span>`:''}
+</div>
+<div class="de-text">${item.text}</div>
+       ${item.aiInsight ? `<div class="ai-insight-box"><i data-lucide="sparkles" style="width:14px; flex-shrink:0;"></i><span>${item.aiInsight}</span></div>` : ''}
+</div>`).join('');
+   lucide.createIcons();
+ }catch(e){el.innerHTML=`<div class="empty">⚠ Sync interrupted: ${e.message}</div>`;}
+}
+
+function mdInline(s){
+ return s
+   .replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1"/>')
+   .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+   .replace(/\*([^*\n]+)\*/g,'<em>$1</em>')
+   .replace(/`([^`]+)`/g,'<code>$1</code>');
+}
+function md(t){
+ if(!t) return '';
+ const lines=String(t).split('\n');
+ let html='', inUl=false, inOl=false;
+ const closeLists=()=>{ if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} };
+ for(const l of lines){
+   if(/^\s*$/.test(l)){ closeLists(); continue; }
+   if(/^### /.test(l)){ closeLists(); html+='<h3>'+mdInline(l.slice(4))+'</h3>'; continue; }
+   if(/^## /.test(l)){ closeLists(); html+='<h2>'+mdInline(l.slice(3))+'</h2>'; continue; }
+   if(/^# /.test(l)){ closeLists(); html+='<h1>'+mdInline(l.slice(2))+'</h1>'; continue; }
+   if(/^>\s?/.test(l)){ closeLists(); html+='<blockquote>'+mdInline(l.replace(/^>\s?/,''))+'</blockquote>'; continue; }
+   if(/^---+\s*$/.test(l)){ closeLists(); html+='<hr/>'; continue; }
+   if(/^- /.test(l)){ if(inOl)closeLists(); if(!inUl){html+='<ul>';inUl=true;} html+='<li>'+mdInline(l.slice(2))+'</li>'; continue; }
+   if(/^\d+\.\s/.test(l)){ if(inUl)closeLists(); if(!inOl){html+='<ol>';inOl=true;} html+='<li>'+mdInline(l.replace(/^\d+\.\s/,''))+'</li>'; continue; }
+   closeLists(); html+='<p>'+mdInline(l)+'</p>';
+ }
+ closeLists();
+ return html;
+}
+// Article content conventionally starts with the title as an H1; the reader renders the
+// title separately, so strip a leading H1 line to avoid showing the title twice.
+function stripH1(c){ return String(c||'').replace(/^\uFEFF?\s*#\s+[^\n]*\r?\n+/, ''); }
+function hexA(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgba(${r},${g},${b},${a})`;}
+function fmtDate(d){if(!d)return'';try{return new Date(d).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}catch{return d;}}
+
+// ===== Challenge / Quest =====
+function escHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function nl2br(s){return escHtml(s).replace(/\n/g,'<br>');}
+let CH_STATE=null;
+function challengeView(item, backHtml){
+ const scenario=item.scenario||item.content||'';
+ const opts=(item.options&&item.options.length)?item.options:[];
+ CH_STATE={opts};
+ let html=(backHtml||'')+`<div class="challenge-view">
+   <div class="ch-scenario-label">Scenario</div>
+   ${item.image_url?`<img src="${escHtml(item.image_url)}" style="width:100%;border-radius:12px;margin-bottom:14px;"/>`:''}
+   <div class="ch-scenario">${md(scenario)}</div>`;
+ if(opts.length){
+   html+=`<div class="ch-prompt">What do you do?</div><div class="ch-options" id="ch-options">`;
+   html+=opts.map((o,i)=>`
+     <button class="ch-opt" id="ch-opt-${i}" onclick="chPick(${i})">
+       <span class="ch-opt-letter">${String.fromCharCode(65+i)}</span>
+       <span class="ch-opt-text">${escHtml(o.text)}</span>
+       <span class="ch-opt-fb" id="ch-fb-${i}">${nl2br(o.feedback)}</span>
+     </button>`).join('');
+   html+=`</div><div class="ch-result" id="ch-result"></div>`;
+ } else {
+   html+=`<div class="empty">This quest has no outcomes yet.</div>`;
+ }
+ html+=`</div>`;
+ return html;
+}
+function chPick(i){
+ if(!CH_STATE||CH_STATE.answered)return;
+ CH_STATE.answered=true;
+ const opts=CH_STATE.opts, chosen=opts[i];
+ const bestIdx=opts.findIndex(o=>o.correct);
+ opts.forEach((o,idx)=>{
+   const btn=document.getElementById('ch-opt-'+idx);
+   if(!btn)return;
+   btn.classList.add('locked','revealed');
+   if(o.correct)btn.classList.add('correct');
+   if(idx===i&&!o.correct)btn.classList.add('wrong');
+   if(idx===i)btn.classList.add('chosen');
+ });
+ const res=document.getElementById('ch-result');
+ if(res){
+   if(chosen&&chosen.correct){
+     res.className='ch-result show win';
+     res.innerHTML='✓ Optimal response — well judged.';
+   } else {
+     res.className='ch-result show miss';
+     const bestLetter=bestIdx>=0?String.fromCharCode(65+bestIdx):'';
+     res.innerHTML='Not the strongest move.'+(bestLetter?(' The most effective response was '+bestLetter+'.'):'')+' Compare the outcomes above.';
+   }
+ }
+}
+function openChallenge(idx){
+ const item=activeItems[idx];markSeen(item.id);
+ document.getElementById('cp-body').innerHTML=challengeView(item,`<button class="back-btn" onclick="loadPanel()">← Topic modules</button>`);
+ document.getElementById('cp-body').scrollTop=0;
+}
+async function libOpenChallenge(id, wrapperId){
+ const el=document.getElementById(wrapperId);
+ const snap=await db.collection('challenges').doc(id).get(); const item={id:snap.id,...snap.data()}; markSeen(item.id);
+ el.innerHTML=`<div style="max-width:720px;margin:0 auto;">`+challengeView(item,`<button class="back-btn" onclick="renderLibList('${wrapperId}')">← Return to operations</button>`)+`</div>`;
+ el.scrollTop=0;
+}
+
+function iconSvg(id,cx,cy,col){
+ const s=`fill="none" stroke="${col}" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"`;
+ if(id==='perf') return `<g ${s}><polyline points="${cx-7},${cy+5} ${cx-3},${cy-3} ${cx+2},${cy+2} ${cx+7},${cy-6}"/><polyline points="${cx+3},${cy-6} ${cx+7},${cy-6} ${cx+7},${cy-2}"/></g>`;
+ if(id==='work') return `<g ${s}><rect x="${cx-10}" y="${cy+3}" width="5" height="6" rx="1"/><rect x="${cx-2}" y="${cy-2}" width="5" height="11" rx="1"/><rect x="${cx+5}" y="${cy-7}" width="5" height="16" rx="1"/></g>`;
+ if(id==='cog')  return `<g ${s}><rect x="${cx-9}" y="${cy-9}" width="8" height="8" rx="1.5"/><rect x="${cx+1}" y="${cy-9}" width="8" height="8" rx="1.5"/><rect x="${cx-9}" y="${cy+1}" width="8" height="8" rx="1.5"/><rect x="${cx+1}" y="${cy+1}" width="8" height="8" rx="1.5"/></g>`;
+ if(id==='pers') return `<g ${s}><circle cx="${cx}" cy="${cy-4}" r="5"/><path d="M${cx-8},${cy+9} c0-4 3.5-7 8-7s8 3 8 7"/></g>`;
+ if(id==='res')  return `<g ${s}><circle cx="${cx}" cy="${cy+1}" r="6"/><path d="M${cx},${cy-8} v4"/><path d="M${cx-3},${cy-6} l3,3 3,-3"/></g>`;
+ if(id==='emo')  return `<g ${s}><path d="M${cx},${cy+10}C${cx},${cy+10} ${cx-11},${cy+3} ${cx-11},${cy-3}C${cx-11},${cy-8} ${cx-7},${cy-10} ${cx-4},${cy-10}C${cx-2},${cy-10} ${cx},${cy-7} ${cx},${cy-7}C${cx},${cy-7} ${cx+2},${cy-10} ${cx+4},${cy-10}C${cx+7},${cy-10} ${cx+11},${cy-8} ${cx+11},${cy-3}C${cx+11},${cy+3} ${cx},${cy+10} ${cx},${cy+10}Z"/></g>`;
+ if(id==='soc')  return `<g ${s}><circle cx="${cx-4}" cy="${cy-4}" r="5"/><circle cx="${cx+6}" cy="${cy-6}" r="3.5"/><path d="M${cx-13},${cy+10}c0-4 3-7 7-7s7 3 7 7"/><path d="M${cx+3},${cy+9}c0-3 2-5 5-5s5 2 5 5"/></g>`;
+ if(id==='bio')  return `<g ${s}><circle cx="${cx}" cy="${cy-2}" r="6"/><path d="M${cx},${cy+4}v6"/><path d="M${cx-3},${cy+8}h6"/><path d="M${cx-5},${cy-5}C${cx-10},${cy-9} ${cx-10},${cy+3} ${cx-5},${cy+3}"/><path d="M${cx+5},${cy-5}C${cx+10},${cy-9} ${cx+10},${cy+3} ${cx+5},${cy+3}"/></g>`;
+ if(id==='sport')return `<g ${s}><path d="M${cx-6},${cy-10} L${cx-1.5},${cy-1}"/><path d="M${cx+6},${cy-10} L${cx+1.5},${cy-1}"/><circle cx="${cx}" cy="${cy+4}" r="6"/><path d="M${cx-2.6},${cy+4} l1.8,2 3.4,-4"/></g>`;
+ return '';
+}
+
+// ===== boot =====
+(async function init(){
+ await loadCustomSubcats();
+ recomputeStats();
+ buildMap();
+ buildMetrics();
+ updateTopbar();
+ await loadStats();
+ refreshDashboard();
+})();
+</script>
+</body>
+</html>
